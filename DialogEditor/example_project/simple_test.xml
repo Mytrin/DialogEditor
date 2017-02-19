@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<root>
+	<dialog id="easy-test">
+
+		<event source="testificate" >
+        		<text>Hello there traveler, what brings you to Javaland?</text>
+		</event>
+
+		<responses>
+        		<response target="exit()">
+            			<text>Leave me be!</text>
+			</response>
+
+			<response target="exit()">
+    				<text>I seek fortune and glory!</text>
+			</response>
+		</responses>
+
+	</dialog>
+</root>
