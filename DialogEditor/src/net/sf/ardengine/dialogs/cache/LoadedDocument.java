@@ -26,7 +26,7 @@ public class LoadedDocument {
     public LoadedDocument(File source, Document loadedXML) {
         this.source = source;
         this.loadedXML = loadedXML;
-        this.size = (source.getTotalSpace() - source.getFreeSpace()) / 1024;
+        this.size = getFileSize(source);
     }
     
     /**
@@ -35,6 +35,13 @@ public class LoadedDocument {
     public void increaseUsage(){
         usage++;
     }
+    
+    /**
+     * Decrease to increase chance that this document will be deleted to free space
+     */
+    public void decreaseUsage(){
+        usage--;
+    }
 
     /**
      * @return How many times has been document requested 
@@ -42,5 +49,13 @@ public class LoadedDocument {
      */
     public int getUsage() {
         return usage;
+    }
+    
+    /**
+     * @param source existing file
+     * @return Size of given file
+     */
+    public static final long getFileSize(File source){
+        return (source.getTotalSpace() - source.getFreeSpace()) / 1024;
     }
 }

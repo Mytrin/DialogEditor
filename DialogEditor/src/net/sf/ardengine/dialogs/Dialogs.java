@@ -1,30 +1,24 @@
 package net.sf.ardengine.dialogs;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jdom2.Document;
+import net.sf.ardengine.dialogs.cache.DocumentCache;
+import net.sf.ardengine.dialogs.cache.LoadedDocument;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-
 
 public class Dialogs {
     /**Format of dialog files*/
     public static final String DIALOG_FORMAT = ".xml"; //todo config
     
-    /**JDOM Parser*/
-    private final SAXBuilder builder = new SAXBuilder();
+    /**Stored JDOM documents*/
+    private final DocumentCache xmlCache= new DocumentCache();
     /**Actual JDOM document*/
-    private Document actualDocument; 
+    private LoadedDocument actualDocument; 
     /**Actual dialog*/
     private Dialog activeDialog;
     /**Path to current folder with dialog files*/
     private String currentProjectPath;
-    /**Actual file*/
-    private File currentFile;
+
     
     /**
      * @param path Path to directory with dialog project
@@ -64,14 +58,14 @@ public class Dialogs {
                 String[] pathSplit = path.split(":");
                 String filePath = currentProjectPath+File.separator+pathSplit[0]+DIALOG_FORMAT;
                 dialogID = pathSplit[1];
-                if(currentFile==null || !currentFile.getPath().equals(filePath)){
-                    loadFile(filePath);
+                if(actualDocument==null || !actualDocument.source.getPath().equals(filePath)){
+                    actualDocument = xmlCache.getFile(filePath);
                 }
             }else{
                 dialogID = path;
             }
             
-            Optional<Element> dialogElement = actualDocument.getRootElement()
+            Optional<Element> dialogElement = actualDocument.loadedXML.getRootElement()
                 .getChildren().stream().filter((Element t) -> {
                     return t.getName().equals(Dialog.TAG_DIALOG) && 
                            t.getAttributeValue(Dialog.ATTR_DIALOG_ID).equals(dialogID);
@@ -82,34 +76,10 @@ public class Dialogs {
                 return activeDialog;
             }else{
                 throw new DialogEditorException("Dialog with id "+dialogID+" "
-                        + "does not exists in file "+currentFile.getPath());
+                        + "does not exists in file "+actualDocument.source.getPath());
             }
         }else{
             throw new DialogEditorException("Project directory has not been selected!");
-        }
-    }
-    
-    /**
-     * Loads given XML file to memory and builds its DOM
-     * @param filePath Path to XML file
-     */
-    private void loadFile(String filePath){
-        File dialogFile = new File(filePath);
-        if(dialogFile.exists()){
-            try{
-                actualDocument = builder.build(dialogFile); //todo caching
-                currentFile = dialogFile;
-            }catch(JDOMException e){
-                //File does not corresponds with XML format, inform user trough logger
-                Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, 
-                        "Loaded file contains corrupted XML: {0}", e);
-                
-                throw new DialogEditorException("Error while loading file "+filePath, e);
-            }catch(IOException ex){
-                throw new DialogEditorException("Error while loading file "+filePath, ex);
-            }
-        }else{
-            throw new DialogEditorException("Loaded path "+filePath+" does not exist!");
         }
     }
     
