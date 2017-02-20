@@ -13,7 +13,7 @@ import org.jdom2.input.SAXBuilder;
 
 public class Dialogs {
     /**Format of dialog files*/
-    public static final String DIALOG_FORMAT = ".xml";
+    public static final String DIALOG_FORMAT = ".xml"; //todo config
     
     /**JDOM Parser*/
     private final SAXBuilder builder = new SAXBuilder();
@@ -93,7 +93,7 @@ public class Dialogs {
      * Loads given XML file to memory and builds its DOM
      * @param filePath Path to XML file
      */
-    public void loadFile(String filePath){
+    private void loadFile(String filePath){
         File dialogFile = new File(filePath);
         if(dialogFile.exists()){
             try{
