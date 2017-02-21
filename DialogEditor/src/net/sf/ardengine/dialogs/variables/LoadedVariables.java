@@ -13,6 +13,7 @@ public class LoadedVariables {
     public static final String CATEGORY_DELIMITER = "\\.";
     public static final String ARRAY_START = "[";
     public static final String ARRAY_END = "]";
+    public static final String ARRAY_START_REGEX = "\\[";
     
     /**Original file*/
     public final File jsonFile;
@@ -41,22 +42,29 @@ public class LoadedVariables {
         
         for (String part : path) {
             if (part.endsWith(ARRAY_END)) {
-                //parse number in "varName[XX]"
+                //parse number in "varName[XX][YY]"
                 int indexStart = part.indexOf(ARRAY_START);
                 String categoryName = part.substring(0, indexStart);
-                int index = Integer.parseInt(part.substring(indexStart+1, part.length() - 1));
+                
                 if(!currentElement.getAsJsonObject().has(categoryName)){
                     throw new DialogEditorException("Accesing non existing array variable: "+categoryName);
                 }
                 
                 currentElement = currentElement.getAsJsonObject().get(categoryName);
                 
-                //array check
-                if(!currentElement.isJsonArray()){
-                    throw new DialogEditorException("Accesing non array variable as array!");
-                }
+                String[] indexes =part.substring(indexStart, part.length() - 1)
+                        .replaceAll(ARRAY_START_REGEX, "").split(ARRAY_END);
                 
-                currentElement = currentElement.getAsJsonArray().get(index);
+                for(String indexString : indexes){
+                    int index = Integer.parseInt(indexString);
+                    
+                    //array check
+                    if(!currentElement.isJsonArray()){
+                        throw new DialogEditorException("Accesing non array variable as array!");
+                    }
+                    
+                    currentElement = currentElement.getAsJsonArray().get(index);
+                }
             } else {
                 if (!currentElement.getAsJsonObject().has(part)) {
                     throw new DialogEditorException("Accesing non existing variable: " + part);
