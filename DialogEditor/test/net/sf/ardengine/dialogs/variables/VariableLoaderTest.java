@@ -13,17 +13,17 @@ public class VariableLoaderTest {
 
     @Test
     public void testBasicLoading() {
-        assertEquals("lorem ipsum", loader.getVariable("example_project/var_test:test.Text"));
+        assertEquals("lorem ipsum", loader.getVariable("example_project/var_test:test.Text").getAsString());
     }
     
     @Test
     public void testArrayLoading() {
-        assertEquals("2.7", loader.getVariable("example_project/var_test:test.Array[1]"));
+        assertEquals("2.7", loader.getVariable("example_project/var_test:test.Array[1]").getAsString());
     }
     
     @Test
     public void testMultidimensionalArrayLoading() {
-        assertEquals("4", loader.getVariable("example_project/var_test:test.2DArray[1][1]"));
+        assertEquals("4", loader.getVariable("example_project/var_test:test.2DArray[1][1]").getAsString());
     }
     
 }

@@ -1,5 +1,6 @@
 package net.sf.ardengine.dialogs.variables;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -28,7 +29,7 @@ public class VariableLoader {
     private final HashMap<String, LoadedVariables> loadedDocuments = new HashMap<>();
     
     /**JSON Parser*/
-    JsonParser gsonParser = new JsonParser();
+    private final JsonParser gsonParser = new JsonParser();
     
     /**
      * Removes all loaded JSON variables from hashmap, exposing them to GC.
@@ -59,36 +60,7 @@ public class VariableLoader {
 
         return loadedDocument;
     }
-    
-    
-    /**
-     * @param variablePath Path to variable (Path/to/fileName:object.varName)
-     * @return Variable stored in json in String format 
-     * or null, if it does not exists.
-     */
-    public String getVariable(String variablePath){
-        if(variablePath.contains(Dialogs.PATH_DELIMITER)){
-            
-            String[] pathSplit = variablePath.split(Dialogs.PATH_DELIMITER);
-            
-            LoadedVariables variables = getFile(pathSplit[0]);
-            String varValue = null;
-            
-            try{
-                varValue = variables.getVariable(pathSplit[1]);
-            }catch(Exception e){
-                Logger.getLogger(VariableLoader.class.getName())
-                        .log(Level.WARNING, "Failed when obtaining variable {0} because {1}",
-                                new Object[]{variablePath, e});
-            }
-            
-            return varValue;
-        }else{
-            //todo GLOBALS
-            return null;
-        }
-    }
-    
+        
     /**
      * Loads given JSON file to memory and builds it.
      * @param filePath Path to JSON file
@@ -116,6 +88,41 @@ public class VariableLoader {
             }
         }else{
             throw new DialogEditorException("Loaded path "+filePath+" does not exist!");
+        }
+    }
+    
+    /**
+     * To obtain concrete data class, please note JsonElement.getAs().
+     * @param variablePath Path to variable within file (Path/to/fileName:object.varName)
+     * @return Variable stored in json element.
+     * or null, if it does not exists.
+     */
+    public JsonElement getVariable(String variablePath){
+        JsonElement target = obtainVariableAtPath(variablePath);
+        
+        return target;
+    }
+    
+    private JsonElement obtainVariableAtPath(String variablePath){
+         if(variablePath.contains(Dialogs.PATH_DELIMITER)){
+            
+            String[] pathSplit = variablePath.split(Dialogs.PATH_DELIMITER);
+            
+            LoadedVariables variables = getFile(pathSplit[0]);
+            JsonElement variable = null;
+            
+            try{
+                variable = variables.getVariable(pathSplit[1]);
+            }catch(Exception e){
+                Logger.getLogger(VariableLoader.class.getName())
+                        .log(Level.WARNING, "Failed when obtaining variable {0} because {1}",
+                                new Object[]{variablePath, e});
+            }
+            
+            return variable;
+        }else{
+            //todo GLOBALS
+            return null;
         }
     }
 }

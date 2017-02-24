@@ -114,17 +114,29 @@ public class Dialog {
     }
 
     /**
+     * If there are no available response, 
+     * NO_RESPONSE will be added to returned stream.
      * @return Available responses for this dialog
      */
     public Stream<Response> getAvailableResponses() {
-        return responses.stream();
+        if(responses.size() > 0){
+            return responses.stream();
+        }
+        
+        return Stream.of(Response.NO_RESPONSE);
     }
     
     /**
+     * If there are no available response, 
+     * NO_RESPONSE will be added to returned array.
      * @return Array of available responses for this dialog
      */
     public Response[] getAvailableResponsesArray() {
-        return responses.toArray(new Response[responses.size()]);
+        if(responses.size() > 0){
+            return responses.toArray(new Response[responses.size()]);
+        }
+        
+        return new Response[]{Response.NO_RESPONSE};
     }
     
     

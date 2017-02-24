@@ -18,9 +18,15 @@ import org.jdom2.Element;
  * Inner tag: text  -   contains text representing this response
  *   
  */
-public class Response {
-    /**Used as response target, signals that there is no following dialog*/
+public class Response {    
+    /** Used as response target, signals that there is no following dialog*/
+    public static final String EXIT_RESPONSE_TEXT="EXIT";
+    
+    /** Used as response target, signals that there is no following dialog*/
     public static final String EXIT_RESPONSE="exit()";
+    
+    /** Response automatically returned by dialog, if no other response found*/   
+    public static final Response NO_RESPONSE= new Response(EXIT_RESPONSE_TEXT, EXIT_RESPONSE);
     
     /**Name of tag symbolizing Response*/
     public static final String TAG_RESPONSE="response";
@@ -35,7 +41,17 @@ public class Response {
     private String text;
     /**Path and ID of target dialog*/
     private String target;
-    
+
+    /**
+     * 
+     * @param text text rendered as this response
+     * @param target Path and ID of target dialog or exit()
+     */
+    public Response(String text, String target) {
+        this(text);
+        this.target = target;
+    }
+
     /**
      * @param text text rendered as this response
      */
