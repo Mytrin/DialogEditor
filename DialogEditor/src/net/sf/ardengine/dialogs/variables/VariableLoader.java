@@ -35,11 +35,25 @@ public class VariableLoader {
     /**JSON builder*/
     private final Gson gsonBuilder = new GsonBuilder().create();
     
+    /**File with variable with unspecified file path*/
+    private LoadedVariables globals;
+    
+    /**
+     * Loads selected file and marks it as global. All variables with unspecified
+     * path will be looked for and saved at this file.
+     * 
+     * @param filePath Path to JSON file
+     */
+    public void loadGlobals(String filePath){
+        globals = getFile(filePath);
+    }
+    
     /**
      * Removes all loaded JSON variables from HashMap, exposing them to GC.
      */
     public void clear(){
         loadedDocuments.clear();
+        globals = null;
     }
 
     /**
@@ -122,6 +136,7 @@ public class VariableLoader {
                 variables.save(gsonBuilder, variables.jsonFile);
             }
         }
+        globals.save(gsonBuilder, globals.jsonFile);
     }
 
     /**
@@ -141,7 +156,11 @@ public class VariableLoader {
 
                 return variables.getVariable(variablePath);
             }else{
-                //todo GLOBALS
+                if(globals != null){
+                    return globals.getVariable(variablePath);
+                }else{
+                    throw new DialogEditorException("Global variables file is not set!");
+                }
             }
         }catch(Exception e){
             Logger.getLogger(VariableLoader.class.getName())
@@ -166,7 +185,11 @@ public class VariableLoader {
             
                 variables.setVariable(variablePath, newValue);
             }else{
-                //todo GLOBALS
+                if(globals != null){
+                    globals.setVariable(variablePath, newValue);
+                }else{
+                    throw new DialogEditorException("Global variables file is not set!");
+                }
             }
         }catch(Exception e){
             Logger.getLogger(VariableLoader.class.getName())
