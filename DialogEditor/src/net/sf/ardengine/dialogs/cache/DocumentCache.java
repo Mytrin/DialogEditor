@@ -10,6 +10,8 @@ import net.sf.ardengine.dialogs.Dialogs;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 /**
  * XML document loader. Loaded documents are stored in Hashmap to prevent 
@@ -18,6 +20,9 @@ import org.jdom2.input.SAXBuilder;
 public class DocumentCache {
     /**Format of dialog files*/
     public static final String DIALOG_FORMAT = ".xml"; //todo config
+    
+    /**XML builder*/
+    private final XMLOutputter xmlBuilder = new XMLOutputter(Format.getPrettyFormat());
     
     /**
      * Change to increase space for loaded files (2048 - 2MB default)
@@ -42,6 +47,7 @@ public class DocumentCache {
      */
     public void clear(){
         loadedDocuments.clear();
+        actualDocument = null;
     }
     
     /**
@@ -144,4 +150,33 @@ public class DocumentCache {
         }
     }
 
+    /**
+     * Saves loaded XML file identified by path back to its original location.
+     * @param filePath Path to XML file
+     */
+    public void saveFile(String filePath){
+        File targetFile = new File(filePath);
+        
+        LoadedDocument dialogs = loadedDocuments.get(filePath);
+        
+        if(dialogs == null){
+            throw new DialogEditorException(filePath+" is not loaded!");
+        }
+        
+        if(dialogs.isModified() || !targetFile.exists()){
+           dialogs.save(xmlBuilder, targetFile);
+        }
+    }
+    
+    /**
+     * Saves all modified XML files.
+     */
+    public void saveAll(){
+        for(LoadedDocument dialogs : loadedDocuments.values()){
+            if(dialogs.isModified()){
+                dialogs.save(xmlBuilder, dialogs.source);
+            }
+        }
+    }
+    
 }

@@ -1,10 +1,15 @@
 package net.sf.ardengine.dialogs.cache;
 
+import com.google.gson.JsonIOException;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Optional;
 import net.sf.ardengine.dialogs.Dialog;
+import net.sf.ardengine.dialogs.DialogEditorException;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.output.XMLOutputter;
 
 /**
  * Represents loaded and built XML document. 
@@ -20,6 +25,8 @@ public class LoadedDocument {
 
     /**How many times has been document requested for loading since last cache cleanup*/
     private int usage = 0;
+    /**True if there has been changes in xml*/
+    private boolean isModified = false;
     
     /**
      * Represents loaded and built XML document. 
@@ -89,6 +96,8 @@ public class LoadedDocument {
         }
         
         loadedXML.getRootElement().getChildren().add(newDialog.createElement());
+        
+        isModified = true;
     }
     
     /**
@@ -101,6 +110,21 @@ public class LoadedDocument {
         if(dialogElement.isPresent()){
             loadedXML.getRootElement().getChildren().remove(dialogElement.get());
         }
+        
+        isModified = true;
+    }
+    
+   /**
+    * Saves xml of this instance to target file.
+    * @param builder Builder to use
+    * @param target File to create or overwrite
+    */    
+    public void save(XMLOutputter builder, File target){
+        try{
+            builder.output(loadedXML, new FileOutputStream(target));
+        }catch(IOException | JsonIOException e){
+            throw new DialogEditorException("Failed to save dialog file: ", e);
+        }
     }
     
     private Optional<Element> getDialogElement(String dialogID){
@@ -110,4 +134,13 @@ public class LoadedDocument {
                            t.getAttributeValue(Dialog.ATTR_DIALOG_ID).equals(dialogID);
                 }).findFirst();
     }
+   
+    /**
+     * @return True if there has been changes in xml
+     */
+    public boolean isModified() {
+        return isModified;
+    }
+    
+    
 }

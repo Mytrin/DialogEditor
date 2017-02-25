@@ -62,7 +62,7 @@ public class LoadedVariables {
     
     /**
     * Saves json of this instance to target file.
-    * @param builder Builde to use
+    * @param builder Builder to use
     * @param target File to create or overwrite
     */    
     public void save(Gson builder, File target){
