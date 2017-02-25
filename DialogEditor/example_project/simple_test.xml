@@ -17,4 +17,16 @@
 		</responses>
 
 	</dialog>
+	<dialog id="easy-variable-test">
+
+		<event source="testificate" >
+        		<text>$Test1</text>
+		</event>
+
+		<responses>
+        		<response target="exit()">
+            			<text>$Test2!</text>
+			</response>
+		</responses>
+	</dialog>
 </root>

@@ -37,8 +37,10 @@ public class Response {
     private static final String ATTR_TARGET="target";
     
     
-    /**Text rendered as this response*/
-    private String text;
+    /**Text rendered as this event without translated variables*/
+    private String rawText;
+    /**Text rendered as this event*/
+    private String translatedText;
     /**Path and ID of target dialog*/
     private String target;
 
@@ -53,10 +55,10 @@ public class Response {
     }
 
     /**
-     * @param text text rendered as this response
+     * @param rawText text rendered as this response without translated variables
      */
-    public Response(String text) {
-        this.text = text;
+    public Response(String rawText) {
+        this.rawText = rawText;
         this.target = EXIT_RESPONSE;
     }
     
@@ -65,7 +67,7 @@ public class Response {
      * @param responseElement element with TAG_RESPONSE name
      */
     public Response(Element responseElement) {
-        this.text = responseElement.getChild(TAG_TEXT).getText();
+        this.rawText = responseElement.getChild(TAG_TEXT).getText();
         this.target = responseElement.getAttributeValue(ATTR_TARGET);
     }
 
@@ -74,7 +76,7 @@ public class Response {
      */
     public Element createElement(){
         Element textTag = new Element(TAG_TEXT);
-            textTag.setText(text);
+            textTag.setText(rawText);
             
         Element response = new Element(TAG_RESPONSE);
             response.getChildren().add(response);
@@ -84,16 +86,30 @@ public class Response {
     }
     
     /**
-     * @return text rendered as this response
+     * @return text rendered as this response without loaded variables
      */
-    public String getText() {
-        return text;
+    public String getRawText() {
+        return rawText;
     }
     
-    public void setText(String text) {
-        this.text = text;
+    public void setRawText(String text) {
+        this.rawText = text;
     }
 
+    /**
+     * @return text rendered as this event
+     */
+    public String getText() {
+        return translatedText;
+    }
+
+    /**
+     * @param translatedText text rendered as this event WITH translated variables
+     */
+    protected void setTranslatedText(String translatedText) {
+        this.translatedText = translatedText;
+    }
+    
     /**
      * @return Path and ID of target dialog or exit()
      */

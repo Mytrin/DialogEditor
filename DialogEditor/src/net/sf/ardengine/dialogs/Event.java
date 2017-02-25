@@ -20,17 +20,19 @@ public class Event {
     private static final String ATTR_SOURCE="source";
     
     
+    /**Text rendered as this event without translated variables*/
+    private String rawText;
     /**Text rendered as this event*/
-    private String text;
+    private String translatedText;
     /**Speaker of the text*/
     private String sourceID;
     
     /**
-     * @param text Text rendered as this event
+     * @param rawText Text rendered as this event
      * @param sourceID Speaker of the text
      */
-    public Event(String text, String sourceID) {
-        this.text = text;
+    public Event(String rawText, String sourceID) {
+        this.rawText = rawText;
         this.sourceID = sourceID;
     }
     
@@ -39,7 +41,7 @@ public class Event {
      * @param eventElement element with TAG_EVENT name
      */
     public Event(Element eventElement) {
-        this.text = eventElement.getChild(TAG_TEXT).getText();
+        this.rawText = eventElement.getChild(TAG_TEXT).getText();
         this.sourceID = eventElement.getAttributeValue(ATTR_SOURCE);
     }
 
@@ -48,7 +50,7 @@ public class Event {
      */
     public Element createElement(){
         Element textTag = new Element(TAG_TEXT);
-            textTag.setText(text);
+            textTag.setText(rawText);
             
         Element response = new Element(TAG_EVENT);
             response.getChildren().add(response);
@@ -58,16 +60,30 @@ public class Event {
     }
     
     /**
+     * @return text rendered as this event without loaded variables
+     */
+    public String getRawText() {
+        return rawText;
+    }
+    
+    public void setRawText(String text) {
+        this.rawText = text;
+    }
+    
+    /**
      * @return text rendered as this event
      */
     public String getText() {
-        return text;
-    }
-    
-    public void setText(String text) {
-        this.text = text;
+        return translatedText;
     }
 
+    /**
+     * @param translatedText text rendered as this event WITH translated variables
+     */
+    protected void setTranslatedText(String translatedText) {
+        this.translatedText = translatedText;
+    }
+    
     /**
      * @return ID of speaker of the text
      */

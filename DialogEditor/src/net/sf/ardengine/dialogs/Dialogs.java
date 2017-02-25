@@ -23,6 +23,9 @@ import net.sf.ardengine.dialogs.variables.VariableLoader;
  * }
  */
 public class Dialogs {
+    /**Path to globals file for Variables*/
+    private static final String GLOBALS_LOCATION = "globals"; //todo config
+    
     /**The char between file path and ID*/
     public static final String PATH_DELIMITER = ":";
     
@@ -30,6 +33,8 @@ public class Dialogs {
     public final DocumentCache xmlCache= new DocumentCache();
     /**Stored JSON variable documents*/
     public final VariableLoader variables= new VariableLoader();
+    /**Class responsible for variable translating*/
+    public final VariableTranslator variableTranslator = new VariableTranslator(this);
 
     /**Actual dialog*/
     private Dialog activeDialog;
@@ -56,8 +61,8 @@ public class Dialogs {
         variables.clear();
         
         if(dialogFolder.exists() && dialogFolder.isDirectory()){
-            currentProjectPath = dialogFolder.getPath();
-            //todo variables loading
+            currentProjectPath = dialogFolder.getPath() + File.separator;
+            variables.loadGlobals(currentProjectPath+GLOBALS_LOCATION);
             return true;
         }else{
             throw new DialogEditorException("Given directory does not exist!");
@@ -83,6 +88,7 @@ public class Dialogs {
             
                 if(requestedDialog != null){
                     activeDialog = requestedDialog;
+                    activeDialog.translateVariables(variableTranslator);
                     return activeDialog;
                 }else{
                     throw new DialogEditorException("Dialog with id "+dialogID+" "
@@ -145,7 +151,7 @@ public class Dialogs {
     }
         
     //File, ID
-    private Pair<String, String> parsePath(String path){
+    protected Pair<String, String> parsePath(String path){
         String filePath = null;
         String dialogID = path;
         

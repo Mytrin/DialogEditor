@@ -2,7 +2,9 @@ package net.sf.ardengine.dialogs;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
+import net.sf.ardengine.dialogs.variables.VariableLoader;
 import org.jdom2.Element;
 
 /**
@@ -24,14 +26,12 @@ public class Dialog {
     /**Attribute name of dialog id*/
     public static final String ATTR_DIALOG_ID="id";
     
-    
     /**Unique dialog ID in file*/
     private String dialogID;
     /**Entry text and commands*/
     private Event event;
     /**Available responses*/
     private final List<Response> responses = new LinkedList<>();
-    
     
     /**
      * @param dialogID Unique dialog ID in file
@@ -55,6 +55,19 @@ public class Dialog {
                 dialogElement.getChild(TAG_RESPONSES).getChildren(Response.TAG_RESPONSE) ){
             responses.add(new Response(response));
         }
+    }
+    
+    /**
+     * Creates normal dialog text from raw text by replacing 
+     * variable names with their value.
+     * @param translator object responsible for translation
+     */
+    public void translateVariables(VariableTranslator translator){
+        event.setTranslatedText(translator.process(event.getRawText()));
+        
+        getAvailableResponses().forEach((Response t) -> {
+            t.setTranslatedText(translator.process(t.getRawText()));
+        });
     }
 
     /**
@@ -138,6 +151,4 @@ public class Dialog {
         
         return new Response[]{Response.NO_RESPONSE};
     }
-    
-    
 }
