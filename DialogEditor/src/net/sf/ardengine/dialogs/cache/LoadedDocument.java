@@ -1,7 +1,10 @@
 package net.sf.ardengine.dialogs.cache;
 
 import java.io.File;
+import java.util.Optional;
+import net.sf.ardengine.dialogs.Dialog;
 import org.jdom2.Document;
+import org.jdom2.Element;
 
 /**
  * Represents loaded and built XML document. 
@@ -57,5 +60,54 @@ public class LoadedDocument {
      */
     public static final long getFileSize(File source){
         return (source.getTotalSpace() - source.getFreeSpace()) / 1024;
+    }
+    
+    /**
+     * @param dialogID ID of requested dialog (for example "Cat1")
+     * @return Dialog or null, if such id does not exists within dialog elements.
+     */
+    public Dialog getDialog(String dialogID){
+        Optional<Element> dialogElement = getDialogElement(dialogID);
+        
+        if(dialogElement.isPresent()){
+            return new Dialog(dialogElement.get());
+        }
+        
+        return null;
+    }    
+
+    /**
+     * Inserts new dialog element into current XML document.
+     * If document already contains dialog with such id, it will be replaced.
+     * @param newDialog Complete dialog to save
+     */
+    public void addDialog(Dialog newDialog){
+        Optional<Element> dialogElement = getDialogElement(newDialog.getDialogID());
+        
+        if(dialogElement.isPresent()){
+            loadedXML.getRootElement().getChildren().remove(dialogElement.get());
+        }
+        
+        loadedXML.getRootElement().getChildren().add(newDialog.createElement());
+    }
+    
+    /**
+     * Removes dialog with given id from document.
+     * @param dialogID id property of dialog element
+     */
+    public void removeDialog(String dialogID){
+        Optional<Element> dialogElement = getDialogElement(dialogID);
+        
+        if(dialogElement.isPresent()){
+            loadedXML.getRootElement().getChildren().remove(dialogElement.get());
+        }
+    }
+    
+    private Optional<Element> getDialogElement(String dialogID){
+        return loadedXML.getRootElement()
+                .getChildren().stream().filter((Element t) -> {
+                    return t.getName().equals(Dialog.TAG_DIALOG) && 
+                           t.getAttributeValue(Dialog.ATTR_DIALOG_ID).equals(dialogID);
+                }).findFirst();
     }
 }

@@ -16,6 +16,9 @@ import org.jdom2.input.SAXBuilder;
  * constant reloading when changing files.
  */
 public class DocumentCache {
+    /**Format of dialog files*/
+    public static final String DIALOG_FORMAT = ".xml"; //todo config
+    
     /**
      * Change to increase space for loaded files (2048 - 2MB default)
      * When loading large files, CACHE_SIZE might be ignored!
@@ -27,6 +30,9 @@ public class DocumentCache {
 
     /**JDOM Parser*/
     private final SAXBuilder builder = new SAXBuilder();
+    
+    /**Actual JDOM document, returned if path is null*/
+    private LoadedDocument actualDocument; 
     
     public DocumentCache() {
     }
@@ -76,24 +82,34 @@ public class DocumentCache {
     /**
      * Obtains requested file from HashMap increasing its usage 
      * or loads it, if not present.
-     * @param filePath Path to XML file
+     * @param filePath Path to XML file(without file suffix), if null, return last returned file.
      * @return XML DOM of file at given path
      */
     public LoadedDocument getFile(String filePath){
         LoadedDocument loadedDocument;
         
-        if(loadedDocuments.containsKey(filePath)){
-            loadedDocument = loadedDocuments.get(filePath);
-        }else{
-            try{
-                loadedDocument = loadFile(filePath);
-            }catch(Exception e){
-                throw new DialogEditorException("File at "+filePath+" could not be loaded!", e);
+        if(filePath == null && actualDocument != null){
+            loadedDocument = actualDocument;
+        }else if(filePath != null){
+            String realFilePath = filePath+DIALOG_FORMAT;
+            
+            if(loadedDocuments.containsKey(realFilePath)){
+                loadedDocument = loadedDocuments.get(realFilePath);
+            }else{
+                try{
+                    loadedDocument = loadFile(realFilePath);
+                }catch(Exception e){
+                    throw new DialogEditorException("File at "+realFilePath+" could not be loaded!", e);
+                }
             }
+        }else{
+            throw new DialogEditorException("No document loaded, but empty path given!");
         }
 
-        loadedDocument.increaseUsage();
-        return loadedDocument;
+        actualDocument = loadedDocument;
+        actualDocument.increaseUsage();
+        
+        return actualDocument;
     }
     
     
@@ -127,5 +143,5 @@ public class DocumentCache {
             throw new DialogEditorException("Loaded path "+filePath+" does not exist!");
         }
     }
-    
+
 }

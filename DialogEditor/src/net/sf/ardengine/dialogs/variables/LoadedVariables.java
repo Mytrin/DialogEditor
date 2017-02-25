@@ -1,8 +1,13 @@
 package net.sf.ardengine.dialogs.variables;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import net.sf.ardengine.dialogs.DialogEditorException;
 
 /**
  * Represents loaded and built JSON document. 
@@ -13,6 +18,8 @@ public class LoadedVariables {
     public final File jsonFile;
     /**Loaded JSON containing dialogs*/
     private final JsonObject json;
+    /**True if there has been changes in json*/
+    private boolean isModified = false;
     
     /**
      * Represents loaded and built JSON document. 
@@ -42,7 +49,28 @@ public class LoadedVariables {
      * @param newValue Value of JsonPrimitive identified by given path
      */
     public void setVariable(String variablePath, JsonPrimitive newValue){
-          PathBuilder.setVariable(json, variablePath, newValue);
+        PathBuilder.setVariable(json, variablePath, newValue);
+        isModified = true;
     }
-        
+
+    /**
+     * @return True if there has been changes in json
+     */
+    public boolean isModified() {
+        return isModified;
+    }
+    
+    /**
+    * Saves json of this instance to target file.
+    * @param builder Builde to use
+    * @param target File to create or overwrite
+    */    
+    public void save(Gson builder, File target){
+        try{
+            builder.toJson(json, new FileWriter(target));
+        }catch(IOException | JsonIOException e){
+            throw new DialogEditorException("Failed to save variable file: ", e);
+        }
+    }
+    
 }

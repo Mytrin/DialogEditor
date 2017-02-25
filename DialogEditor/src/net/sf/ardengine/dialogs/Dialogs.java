@@ -1,11 +1,11 @@
 package net.sf.ardengine.dialogs;
 
+import com.google.gson.JsonPrimitive;
 import java.io.File;
-import java.util.Optional;
+import javafx.util.Pair;
 import net.sf.ardengine.dialogs.cache.DocumentCache;
 import net.sf.ardengine.dialogs.cache.LoadedDocument;
 import net.sf.ardengine.dialogs.variables.VariableLoader;
-import org.jdom2.Element;
 
 /**
  * This is main class of the library. It is used to load and 
@@ -23,27 +23,18 @@ import org.jdom2.Element;
  * }
  */
 public class Dialogs {
+    /**The char between file path and ID*/
     public static final String PATH_DELIMITER = ":";
     
-    /**Format of dialog files*/
-    public static final String DIALOG_FORMAT = ".xml"; //todo config
-    
     /**Stored JDOM documents*/
-    private final DocumentCache xmlCache= new DocumentCache();
+    public final DocumentCache xmlCache= new DocumentCache();
     /**Stored JSON variable documents*/
-    private final VariableLoader variables= new VariableLoader();
-    /**Actual JDOM document*/
-    private LoadedDocument actualDocument; 
+    public final VariableLoader variables= new VariableLoader();
 
-    
-    
-    
-    
     /**Actual dialog*/
     private Dialog activeDialog;
     /**Path to current folder with dialog files*/
     private String currentProjectPath;
-
     
     /**
      * @param path Path to directory with dialog project
@@ -81,31 +72,24 @@ public class Dialogs {
     public Dialog loadDialog(String path){
         if(currentProjectPath != null && !currentProjectPath.isEmpty()){
             
-            String dialogID;
+            Pair<String, String> pathInfo = parsePath(path);
+            String filePath = pathInfo.getKey();
+            String dialogID = pathInfo.getValue();
             
-            if(path.contains(PATH_DELIMITER)){ //Otherwise loading from actual file
-                String[] pathSplit = path.split(PATH_DELIMITER);
-                String filePath = currentProjectPath+File.separator+pathSplit[0]+DIALOG_FORMAT;
-                dialogID = pathSplit[1];
-                if(actualDocument==null || !actualDocument.source.getPath().equals(filePath)){
-                    actualDocument = xmlCache.getFile(filePath);
+            LoadedDocument dialogFile = xmlCache.getFile(filePath);
+            
+            if(dialogFile != null){
+                Dialog requestedDialog = dialogFile.getDialog(dialogID);
+            
+                if(requestedDialog != null){
+                    activeDialog = requestedDialog;
+                    return activeDialog;
+                }else{
+                    throw new DialogEditorException("Dialog with id "+dialogID+" "
+                        + "does not exists in file "+filePath);
                 }
             }else{
-                dialogID = path;
-            }
-            
-            Optional<Element> dialogElement = actualDocument.loadedXML.getRootElement()
-                .getChildren().stream().filter((Element t) -> {
-                    return t.getName().equals(Dialog.TAG_DIALOG) && 
-                           t.getAttributeValue(Dialog.ATTR_DIALOG_ID).equals(dialogID);
-                }).findFirst();
-            
-            if(dialogElement.isPresent()){
-                activeDialog = new Dialog(dialogElement.get());
-                return activeDialog;
-            }else{
-                throw new DialogEditorException("Dialog with id "+dialogID+" "
-                        + "does not exists in file "+actualDocument.source.getPath());
+                throw new DialogEditorException("Could not load file "+filePath);
             }
         }else{
             throw new DialogEditorException("Project directory has not been selected!");
@@ -134,6 +118,44 @@ public class Dialogs {
      */
     public Dialog getActiveDialog() {
         return activeDialog;
+    }
+    
+    /**
+     * To obtain concrete data class, please note JsonElement.getAs().
+     * @param variablePath Path to variable within file (Path/to/fileName:object.varName)
+     * @return Variable stored in json element.
+     * or null, if it does not exists.
+     */
+    public JsonPrimitive getVariable(String variablePath){
+        Pair<String, String> pathInfo = parsePath(variablePath);
+        
+        return variables.getVariable(pathInfo.getKey(), pathInfo.getValue());
+    }
+    
+   /**
+    * If some objects or array specified by variablePath are missing, they will be created.
+    * Does not check if value is already present!
+    * @param variablePath Path to variable within file (Path/to/fileName:object.varName)
+    * @param newValue Value of JsonPrimitive identified by given path
+    */
+    public void setVariable(String variablePath, JsonPrimitive newValue){
+        Pair<String, String> pathInfo = parsePath(variablePath);
+        
+        variables.setVariable(pathInfo.getKey(), pathInfo.getValue(), newValue);
+    }
+        
+    //File, ID
+    private Pair<String, String> parsePath(String path){
+        String filePath = null;
+        String dialogID = path;
+        
+        if(path.contains(PATH_DELIMITER)){
+            String[] pathSplit = path.split(PATH_DELIMITER);
+            filePath = currentProjectPath+File.separator+pathSplit[0];
+            dialogID = pathSplit[1];
+        }
+        
+        return new Pair<>(filePath, dialogID);
     }
 
 }
