@@ -1,9 +1,9 @@
 package net.sf.ardengine.dialogs.variables;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -90,26 +90,20 @@ public class VariableLoader {
             throw new DialogEditorException("Loaded path "+filePath+" does not exist!");
         }
     }
-    
+
     /**
      * To obtain concrete data class, please note JsonElement.getAs().
      * @param variablePath Path to variable within file (Path/to/fileName:object.varName)
      * @return Variable stored in json element.
      * or null, if it does not exists.
      */
-    public JsonElement getVariable(String variablePath){
-        JsonElement target = obtainVariableAtPath(variablePath);
-        
-        return target;
-    }
-    
-    private JsonElement obtainVariableAtPath(String variablePath){
+    public  JsonPrimitive getVariable(String variablePath){
          if(variablePath.contains(Dialogs.PATH_DELIMITER)){
             
             String[] pathSplit = variablePath.split(Dialogs.PATH_DELIMITER);
             
             LoadedVariables variables = getFile(pathSplit[0]);
-            JsonElement variable = null;
+            JsonPrimitive variable = null;
             
             try{
                 variable = variables.getVariable(pathSplit[1]);
@@ -123,6 +117,32 @@ public class VariableLoader {
         }else{
             //todo GLOBALS
             return null;
+        }
+    }
+    
+    /**
+     * If some objects or array specified by variablePath are missing, they will be created.
+     * Does not check if value is already present!
+     * 
+     * @param variablePath Path to variable within file (Path/to/fileName:object.varName)
+     * @param newValue Value of JsonPrimitive identified by given path
+     */
+    public void setVariable(String variablePath, JsonPrimitive newValue){
+         if(variablePath.contains(Dialogs.PATH_DELIMITER)){
+            
+            String[] pathSplit = variablePath.split(Dialogs.PATH_DELIMITER);
+            
+            LoadedVariables variables = getFile(pathSplit[0]);
+            
+            try{
+                variables.setVariable(pathSplit[1], newValue);
+            }catch(Exception e){
+                Logger.getLogger(VariableLoader.class.getName())
+                        .log(Level.WARNING, "Failed when creating variable {0} because {1}",
+                                new Object[]{variablePath, e});
+            }
+        }else{
+            //todo GLOBALS
         }
     }
 }
