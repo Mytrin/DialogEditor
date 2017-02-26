@@ -8,6 +8,11 @@ import com.google.gson.JsonPrimitive;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * Once I killed an hour trying to figure, why is every test loader hashmap empty...
+ * 
+ * @author mytrin
+ */
 public class VariableLoaderTest {
     
     Gson gson = new GsonBuilder().create();
@@ -26,22 +31,23 @@ public class VariableLoaderTest {
 
     public VariableLoaderTest() {
         //Please not that these test are not using proper way trough Dialogs.get*
-        loader.getFile("example_project/var_test");
+        loader.setProjectPath("example_project");
+        loader.getFile("var_test");
     }
 
     @Test
     public void testBasicLoading() {
-        assertEquals("lorem ipsum", loader.getVariable("example_project/var_test", "test.Text").getAsString());
+        assertEquals("lorem ipsum", loader.getVariable("var_test:test.Text").getAsString());
     }
     
     @Test
     public void testArrayLoading() {
-        assertEquals("2.7", loader.getVariable("example_project/var_test", "test.Array[1]").getAsString());
+        assertEquals("2.7", loader.getVariable("var_test:test.Array[1]").getAsString());
     }
     
     @Test
     public void testMultidimensionalArrayLoading() {
-        assertEquals("4", loader.getVariable("example_project/var_test", "test.2DArray[1][1]").getAsString());
+        assertEquals("4", loader.getVariable("var_test:test.2DArray[1][1]").getAsString());
     }
     
     @Test

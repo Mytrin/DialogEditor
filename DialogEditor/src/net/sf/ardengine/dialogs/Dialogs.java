@@ -1,10 +1,10 @@
 package net.sf.ardengine.dialogs;
 
+import net.sf.ardengine.dialogs.variables.VariableTranslator;
 import com.google.gson.JsonPrimitive;
 import java.io.File;
-import javafx.util.Pair;
 import net.sf.ardengine.dialogs.cache.DocumentCache;
-import net.sf.ardengine.dialogs.cache.LoadedDocument;
+import net.sf.ardengine.dialogs.functions.FunctionsTranslator;
 import net.sf.ardengine.dialogs.variables.VariableLoader;
 
 /**
@@ -22,28 +22,24 @@ import net.sf.ardengine.dialogs.variables.VariableLoader;
  *    System.out.println("R:  "+r.getText());
  * }
  */
-public class Dialogs {
-    /**Path to globals file for Variables*/
-    private static final String GLOBALS_LOCATION = "globals"; //todo config
-    
-    /**The char between file path and ID*/
-    public static final String PATH_DELIMITER = ":";
+public class Dialogs {    
     
     /**Stored JDOM documents*/
-    public final DocumentCache xmlCache= new DocumentCache();
+    private final DocumentCache xmlCache = new DocumentCache();
     /**Stored JSON variable documents*/
-    public final VariableLoader variables= new VariableLoader();
+    private final VariableLoader variables = new VariableLoader();
     /**Class responsible for variable translating*/
-    public final VariableTranslator variableTranslator = new VariableTranslator(this);
+    private final VariableTranslator variableTranslator = new VariableTranslator(this);
+    /**Class responsible for execute and condition*/
+    private final FunctionsTranslator functionTranslator = new FunctionsTranslator(this);
 
     /**Actual dialog*/
     private Dialog activeDialog;
-    /**Path to current folder with dialog files*/
-    private String currentProjectPath;
-    
+        
     /**
-     * @param path Path to directory with dialog project
+     * Clears resources and discards unsaved changes from previous project and loads new.
      * 
+     * @param path Path to directory with dialog project
      * @return true, if project has been successfully loaded.
      */
     public boolean loadFolder(String path){
@@ -51,18 +47,17 @@ public class Dialogs {
     }
     
     /**
+     * Clears resources and discards unsaved changes from previous project and loads new.
      * @param dialogFolder Path to directory with dialog project
-     * 
      * @return true, if project has been successfully loaded.
      */
     public boolean loadFolder(File dialogFolder){
-        //clean last project
-        xmlCache.clear();
-        variables.clear();
-        
         if(dialogFolder.exists() && dialogFolder.isDirectory()){
-            currentProjectPath = dialogFolder.getPath() + File.separator;
-            variables.loadGlobals(currentProjectPath+GLOBALS_LOCATION);
+            String folderPath = dialogFolder.getPath();
+            
+            xmlCache.setProjectPath(folderPath);
+            variables.setProjectPath(folderPath);
+            
             return true;
         }else{
             throw new DialogEditorException("Given directory does not exist!");
@@ -75,31 +70,18 @@ public class Dialogs {
      * @return Dialog with this path, otherwise throws DialogEditorException
      */
     public Dialog loadDialog(String path){
-        if(currentProjectPath != null && !currentProjectPath.isEmpty()){
+        Dialog requestedDialog = xmlCache.loadDialog(path);
+        
+        if(requestedDialog != null){
+            activeDialog = requestedDialog;
             
-            Pair<String, String> pathInfo = parsePath(path);
-            String filePath = pathInfo.getKey();
-            String dialogID = pathInfo.getValue();
+            activeDialog.translateVariables(variableTranslator);
+            functionTranslator.process(activeDialog);
             
-            LoadedDocument dialogFile = xmlCache.getFile(filePath);
-            
-            if(dialogFile != null){
-                Dialog requestedDialog = dialogFile.getDialog(dialogID);
-            
-                if(requestedDialog != null){
-                    activeDialog = requestedDialog;
-                    activeDialog.translateVariables(variableTranslator);
-                    return activeDialog;
-                }else{
-                    throw new DialogEditorException("Dialog with id "+dialogID+" "
-                        + "does not exists in file "+filePath);
-                }
-            }else{
-                throw new DialogEditorException("Could not load file "+filePath);
-            }
-        }else{
-            throw new DialogEditorException("Project directory has not been selected!");
+            return activeDialog;
         }
+        
+        return null;            
     }
     
     /**
@@ -128,40 +110,24 @@ public class Dialogs {
     
     /**
      * To obtain concrete data class, please note JsonElement.getAs().
-     * @param variablePath Path to variable within file (Path/to/fileName:object.varName)
+     * Example: Path/to/fileName:object.varName
+     * @param completePath complete variable path (Path/to/fileName:object.varName)
      * @return Variable stored in json element.
      * or null, if it does not exists.
      */
-    public JsonPrimitive getVariable(String variablePath){
-        Pair<String, String> pathInfo = parsePath(variablePath);
-        
-        return variables.getVariable(pathInfo.getKey(), pathInfo.getValue());
+    public JsonPrimitive getVariable(String completePath){
+        return variables.getVariable(completePath);
     }
     
-   /**
-    * If some objects or array specified by variablePath are missing, they will be created.
-    * Does not check if value is already present!
-    * @param variablePath Path to variable within file (Path/to/fileName:object.varName)
-    * @param newValue Value of JsonPrimitive identified by given path
-    */
-    public void setVariable(String variablePath, JsonPrimitive newValue){
-        Pair<String, String> pathInfo = parsePath(variablePath);
-        
-        variables.setVariable(pathInfo.getKey(), pathInfo.getValue(), newValue);
-    }
-        
-    //File, ID
-    protected Pair<String, String> parsePath(String path){
-        String filePath = null;
-        String dialogID = path;
-        
-        if(path.contains(PATH_DELIMITER)){
-            String[] pathSplit = path.split(PATH_DELIMITER);
-            filePath = currentProjectPath+File.separator+pathSplit[0];
-            dialogID = pathSplit[1];
-        }
-        
-        return new Pair<>(filePath, dialogID);
+    /**
+     * If some objects or array specified by variablePath are missing, they will be created.
+     * Does not check if value is already present!
+     * Example: Path/to/fileName:object.varName
+     * @param completePath complete variable path (Path/to/fileName:object.varName)
+     * @param newValue Value of JsonPrimitive identified by given path
+     */
+    public void setVariable(String completePath, JsonPrimitive newValue){
+        variables.setVariable(completePath, newValue);
     }
 
 }

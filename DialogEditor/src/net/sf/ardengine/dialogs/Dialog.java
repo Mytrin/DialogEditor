@@ -1,5 +1,6 @@
 package net.sf.ardengine.dialogs;
 
+import net.sf.ardengine.dialogs.variables.VariableTranslator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;

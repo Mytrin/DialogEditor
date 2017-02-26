@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
+import net.sf.ardengine.dialogs.AResourceLoader;
 import net.sf.ardengine.dialogs.DialogEditorException;
 import net.sf.ardengine.dialogs.Dialogs;
 
@@ -22,9 +24,11 @@ import net.sf.ardengine.dialogs.Dialogs;
  * Variables are stored within json files. These files are loaded when 
  * their inner variable is request into instance of LoadedVariables class.
  */
-public class VariableLoader {  
+public class VariableLoader extends AResourceLoader<LoadedVariables>{  
     /**Format of dialog files*/
     public static final String VARIABLE_FORMAT = ".json"; //todo config
+    /**Path to globals file for Variables*/
+    private static final String GLOBALS_LOCATION = "globals"; //todo config
     
     /**Already loaded documents identified by path to source file*/
     private final HashMap<String, LoadedVariables> loadedDocuments = new HashMap<>();
@@ -37,54 +41,42 @@ public class VariableLoader {
     
     /**File with variable with unspecified file path*/
     private LoadedVariables globals;
-    
-    /**
-     * Loads selected file and marks it as global. All variables with unspecified
-     * path will be looked for and saved at this file.
-     * 
-     * @param filePath Path to JSON file
-     */
-    public void loadGlobals(String filePath){
-        globals = getFile(filePath);
-    }
-    
-    /**
-     * Removes all loaded JSON variables from HashMap, exposing them to GC.
-     */
+        
+    @Override
     public void clear(){
+        super.clear();
         loadedDocuments.clear();
         globals = null;
     }
 
-    /**
-     * Obtains requested file from HashMap or loads it, if not present.
-     * @param filePath Path to JSON file
-     * @return loaded variables
-     */
+    
+    @Override
+    public void setProjectPath(String folderPath) {
+        super.setProjectPath(folderPath);
+        globals = getFile(GLOBALS_LOCATION);
+    }    
+    
+
+    @Override
     public LoadedVariables getFile(String filePath){
         LoadedVariables loadedDocument;
-        
-        String realPath = filePath+VARIABLE_FORMAT;
-        
-        if(loadedDocuments.containsKey(realPath)){
-            loadedDocument = loadedDocuments.get(realPath);
+
+        if(loadedDocuments.containsKey(filePath)){
+            loadedDocument = loadedDocuments.get(filePath);
         }else{
             try{
-                loadedDocument = loadFile(realPath);
+                loadedDocument = loadFile(filePath);
             }catch(Exception e){
-                throw new DialogEditorException("File at "+realPath+" could not be loaded!", e);
+                throw new DialogEditorException("Resource "+filePath+" could not be loaded!", e);
             }
         }
 
         return loadedDocument;
     }
         
-    /**
-     * Loads given JSON file to memory and builds it.
-     * @param filePath Path to JSON file
-     */
-    private LoadedVariables loadFile(String filePath){
-        File jsonFile = new File(filePath);
+    @Override
+    protected LoadedVariables loadFile(String filePath){
+        File jsonFile = new File(currentProjectPath+filePath+VARIABLE_FORMAT);
         JsonObject loadedJson;
         LoadedVariables variables;
         
@@ -98,7 +90,7 @@ public class VariableLoader {
             }catch(JsonIOException | JsonSyntaxException e){
                 //File does not corresponds with XML format, inform user trough logger
                 Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, 
-                        "Loaded file contains corrupted XML: {0}", e);
+                        "Loaded file contains corrupted JSON: {0}", e);
                 
                 throw new DialogEditorException("Error while loading file "+filePath, e);
             }catch(FileNotFoundException ex){ //Should not ever happen.
@@ -109,10 +101,7 @@ public class VariableLoader {
         }
     }
     
-    /**
-     * Saves loaded JSON file identified by path back to its original location.
-     * @param filePath Path to JSON file
-     */
+    @Override
     public void saveFile(String filePath){
         File targetFile = new File(filePath);
         
@@ -127,9 +116,7 @@ public class VariableLoader {
         }
     }
     
-    /**
-     * Saves all modified JSON files.
-     */
+    @Override
     public void saveAll(){
         for(LoadedVariables variables : loadedDocuments.values()){
             if(variables.isModified()){
@@ -142,12 +129,15 @@ public class VariableLoader {
     /**
      * To obtain concrete data class, please note JsonElement.getAs().
      * Example: Path/to/fileName:object.varName
-     * @param filePath path to file within loaded folder (Path/to/fileName)
-     * @param variablePath Path to variable within file (object.varName)
+     * @param completePath complete variable path (Path/to/fileName:object.varName)
      * @return Variable stored in json element.
      * or null, if it does not exists.
      */
-    public  JsonPrimitive getVariable(String filePath, String variablePath){
+    public  JsonPrimitive getVariable(String completePath){
+        Pair<String, String> pathInfo = parsePath(completePath);
+        String filePath = pathInfo.getKey();
+        String variablePath = pathInfo.getValue();
+        
         try{
             LoadedVariables variables;
             
@@ -174,11 +164,14 @@ public class VariableLoader {
      * If some objects or array specified by variablePath are missing, they will be created.
      * Does not check if value is already present!
      * Example: Path/to/fileName:object.varName
-     * @param filePath path to file within loaded folder (Path/to/fileName)
-     * @param variablePath Path to variable within file (object.varName)
+     * @param completePath complete variable path (Path/to/fileName:object.varName)
      * @param newValue Value of JsonPrimitive identified by given path
      */
-    public void setVariable(String filePath, String variablePath, JsonPrimitive newValue){
+    public void setVariable(String completePath, JsonPrimitive newValue){
+        Pair<String, String> pathInfo = parsePath(completePath);
+        String filePath = pathInfo.getKey();
+        String variablePath = pathInfo.getValue();
+        
         try{
             if(filePath != null){
                 LoadedVariables variables = getFile(filePath);
@@ -197,4 +190,5 @@ public class VariableLoader {
                     new Object[]{variablePath, e});
         }
     }
+    
 }

@@ -1,8 +1,9 @@
-package net.sf.ardengine.dialogs;
+package net.sf.ardengine.dialogs.variables;
 
 import com.google.gson.JsonPrimitive;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.sf.ardengine.dialogs.Dialogs;
 
 /**
  * Creates normal text from raw text by replacing 
@@ -18,7 +19,7 @@ public class VariableTranslator {
     private static final String VAR_START_REGEX = "\\$";
 
     /**
-     * @param dialogs Available JSON variable loader
+     * @param dialogs Makes available Variable loader 
      */
     public VariableTranslator(Dialogs dialogs) {
         this.dialogs = dialogs;
