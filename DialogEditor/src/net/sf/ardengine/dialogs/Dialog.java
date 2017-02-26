@@ -2,9 +2,7 @@ package net.sf.ardengine.dialogs;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
-import net.sf.ardengine.dialogs.variables.VariableLoader;
 import org.jdom2.Element;
 
 /**
@@ -150,5 +148,12 @@ public class Dialog {
         }
         
         return new Response[]{Response.NO_RESPONSE};
+    }
+    
+    /**
+     * @return Array of all responses defined for this dialog.
+     */
+    public Response[] getAllResponsesArray() {
+            return responses.toArray(new Response[responses.size()]);
     }
 }

@@ -46,11 +46,11 @@ public class Response {
 
     /**
      * 
-     * @param text text rendered as this response
+     * @param rawText text rendered as this response without translated variables
      * @param target Path and ID of target dialog or exit()
      */
-    public Response(String text, String target) {
-        this(text);
+    public Response(String rawText, String target) {
+        this(rawText);
         this.target = target;
     }
 
