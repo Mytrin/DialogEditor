@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="ap" prefHeight="389.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.FXMLmainController">
+<AnchorPane id="AnchorPane" fx:id="ap" prefHeight="389.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.sf.ardengine.dialogs.gui.FXMLmainController">
    <children>
       <Pane layoutY="-8.0" prefHeight="600.0" prefWidth="800.0">
          <children>
@@ -88,7 +88,7 @@
                                                                   <Pane fx:id="pAnswer" layoutX="333.0" layoutY="14.0" prefHeight="485.0" prefWidth="454.0">
                                                                      <children>
                                                                         <Button layoutX="178.0" layoutY="290.0" mnemonicParsing="false" onAction="#saveAnswer" prefHeight="56.0" prefWidth="119.0" text="Ulož odpověď!" />
-                                                                        <MenuButton fx:id="mbFunction" alignment="CENTER" layoutX="129.0" layoutY="164.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="99.0" text="Konec">
+                                                                        <MenuButton fx:id="mbTarget" alignment="CENTER" layoutX="129.0" layoutY="164.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="99.0" text="Konec">
                                                                            <items>
                                                                               <MenuItem id="0" mnemonicParsing="false" text="Konec" />
                                                                               <Menu mnemonicParsing="false" text="Přejdi na" />
@@ -137,11 +137,7 @@
                   </Tab>
                   <Tab text="Prohlížeč">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <TextArea fx:id="taFile" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="534.0" prefWidth="771.0" />
-                           </children>
-                        </AnchorPane>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                     </content>
                   </Tab>
               </tabs>

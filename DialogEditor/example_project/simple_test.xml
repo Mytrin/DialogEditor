@@ -1,8 +1,8 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<dialog id="easy-test">
 
-		<event source="testificate" >
+		<event source="testificate">
         		<text>Hello there traveler, what brings you to Javaland?</text>
 		</event>
 
@@ -19,7 +19,7 @@
 	</dialog>
 	<dialog id="easy-variable-test">
 
-		<event source="testificate" >
+		<event source="testificate">
         		<text>$Test1</text>
 		</event>
 

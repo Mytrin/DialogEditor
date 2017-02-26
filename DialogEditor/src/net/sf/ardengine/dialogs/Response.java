@@ -79,7 +79,7 @@ public class Response {
             textTag.setText(rawText);
             
         Element response = new Element(TAG_RESPONSE);
-            response.getChildren().add(response);
+            response.getChildren().add(textTag);
             response.setAttribute(ATTR_TARGET, target);
             
         return response;
@@ -119,6 +119,11 @@ public class Response {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    @Override
+    public String toString() {
+        return rawText;
     }
 
 }

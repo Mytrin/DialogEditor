@@ -86,17 +86,16 @@ public class LoadedDocument {
     }    
 
     /**
-     * Inserts new dialog element into current XML document.
+     * Inserts new dialog element into current XML document or refreshes the old one.
      * If document already contains dialog with such id, it will be replaced.
      * @param newDialog Complete dialog to save
      */
-    public void addDialog(Dialog newDialog){
+    public void addOrRefreshDialog(Dialog newDialog){
         Optional<Element> dialogElement = getDialogElement(newDialog.getDialogID());
         
         if(dialogElement.isPresent()){
             loadedXML.getRootElement().getChildren().remove(dialogElement.get());
         }
-        
         loadedXML.getRootElement().getChildren().add(newDialog.createElement());
         
         isModified = true;
@@ -115,14 +114,14 @@ public class LoadedDocument {
         
         isModified = true;
     }
-    
+
    /**
     * Saves xml of this instance to target file.
     * @param builder Builder to use
     * @param target File to create or overwrite
     */    
     public void save(XMLOutputter builder, File target){
-        try{
+        try{  
             builder.output(loadedXML, new FileOutputStream(target));
         }catch(IOException | JsonIOException e){
             throw new DialogEditorException("Failed to save dialog file: ", e);

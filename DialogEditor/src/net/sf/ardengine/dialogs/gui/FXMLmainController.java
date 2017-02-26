@@ -39,6 +39,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 /**
@@ -75,7 +76,7 @@ public class FXMLmainController implements Initializable {
     LoadedDocument document;
     Dialog actualDialog;
     Response actualResponse;
-    String fileName, target;
+    String fileName, target, projectFolder, filePath;
     ObservableList<Dialog> dialogs;
     ObservableList<Response> answers;
 
@@ -88,35 +89,33 @@ public class FXMLmainController implements Initializable {
         chbCondition.getSelectionModel().selectFirst();
     }
 
-    /*    private void refreshDialogs() {
+    private void refreshDialogs() {
         dialogs = FXCollections.observableArrayList();
-        koren.getDialogs().stream().forEach((dialog) -> {
+        document.getAllDialogs().forEach((dialog) -> {
             dialogs.add(dialog);
         });
         lvDialogs.setItems(dialogs);
-    }*/
+    }
 
- /*   private void refreshAnswers() {
-        if (dial != null) {
+    private void refreshAnswers() {
+        if (actualDialog != null) {
             answers = FXCollections.observableArrayList();
-            dial.getAnswers().getAnswers().stream().forEach((anss) -> {
-                answers.add(anss);
-            });
+            answers.addAll(actualDialog.getAllResponsesArray());
             lvAnswers.setItems(answers);
-            taQuestion.setText(dial.getFQuestion().getText());
+            taQuestion.setText(actualDialog.getEvent().getRawText());
             fillTokens();
         }
-    }*/
+    }
 
- /* private void refreshAns() {
+    private void refreshAns() {
 
-        if (ans == null) {
+        if (actualResponse == null) {
             pAnswer.setDisable(true);
         } else {
             pAnswer.setDisable(false);
-            taAnswer.setText(ans.getText());
-            condition = ans.getIfToken();
-            if (condition.startsWith("#")) {
+            taAnswer.setText(actualResponse.getRawText());
+            //condition = ans.getIfToken();
+            /* if (condition.startsWith("#")) {
                 chbCondition.setDisable(false);
                 for (AnswerToken answerstoken : answerstokens) {
                     if (answerstoken.getContent().equals(condition)) {
@@ -131,33 +130,10 @@ public class FXMLmainController implements Initializable {
                 }
             } else {
                 chbCondition.setDisable(true);
-            }
-            function = ans.getEffect();
-            if (function.startsWith("editor.goto")) {
-                String buff = function.substring(12, function.length() - 1);
-                mbFunction.setText(koren.getDialog(Integer.parseInt(buff)).toString());
-            }
-            if (ans.getCreateToken().isEmpty()) {
-                cbTokenRemember.setSelected(false);
-                tfTokenRemember.setText("");
-                tfTokenRemember.setDisable(true);
-            } else {
-                cbTokenRemember.setSelected(true);
-                for (AnswerToken answerstoken : answerstokens) {
-                    if (answerstoken.getContent().equals(ans.getCreateToken())) {
-                        tfTokenRemember.setText(answerstoken.getName());
-                        break;
-                    }
-                }
-                tfTokenRemember.setDisable(false);
-            }
+            }*/
+            target = actualResponse.getTarget();
+            mbTarget.setText(target);
         }
-
-    }*/
-    private void refresh() {
-        refreshDialogs();
-        refreshAnswers();
-        refreshAns();
 
     }
 
@@ -175,7 +151,7 @@ public class FXMLmainController implements Initializable {
     public void openFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Otevřít dialogový soubor.");
-        File directory = new File("/");                     //TODO
+        File directory = new File("\\");                     //TODO
         fileChooser.setInitialDirectory(directory);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
         File file = fileChooser.showOpenDialog((Stage) (ap.getScene().getWindow()));
@@ -188,21 +164,28 @@ public class FXMLmainController implements Initializable {
             Logger.getLogger(FXMLmainController.class.getName()).log(Level.SEVERE, null, ex);
             //throw some cool exception
         }
-        refresh();
+        refreshDialogs();
+        refreshAnswers();
+        refreshAns();
+        filePath = file.getAbsolutePath();
         fileName = file.getAbsolutePath().replace(directory.getAbsolutePath() + "\\", "");
         lFile.setText(fileName);
+        fillTargets();
     }
 
     public void newFile() {
-        Element element = new Element("root");
-        fileName = dialogWindow("Zadejte název souboru: ");
+        fileName = dialogWindow("Zadejte název souboru: "); //TODO cesta
         lFile.setText(fileName);
-        document = new LoadedDocument(new File(fileName), element.getDocument());
-        refresh();
+        document = new LoadedDocument(new File(fileName), (new Element("root")).getDocument());
+        filePath = document.source.getAbsolutePath();
+        fillTargets();
+        refreshDialogs();
+        refreshAnswers();
+        refreshAns();
     }
 
     public void saveFile() {
-        document.save(new XMLOutputter(), document.source);
+        document.save(new XMLOutputter(Format.getPrettyFormat()), document.source);
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Info");
         alert.setHeaderText(null);
@@ -212,30 +195,40 @@ public class FXMLmainController implements Initializable {
 
     public void newDialog() {
         String id = dialogWindow("Zadejte id dialogu:");
-        //  ans = null;
-        actualDialog = new Dialog(id, new Event("Undefined", ""), new ArrayList<>());
+        //TODO unikátnost
+        addDialogToMenu(id);
+        actualResponse = null;
+        actualDialog = new Dialog(id, new Event("", "Undefined"), new ArrayList<>());
         tabChosenDialog.setDisable(false);
         tp2.getSelectionModel().select(2);
-        refresh();
+        refreshDialogs();
+        refreshAnswers();
+        refreshAns();
     }
 
     public void editDialog() {
         actualDialog = lvDialogs.getSelectionModel().getSelectedItem();
-        //  ans = null;
-        refresh();
+        actualResponse = null;
+        refreshAnswers();
+        refreshAns();
         tabChosenDialog.setDisable(false);
         tp2.getSelectionModel().select(2);
     }
 
     public void deleteDialog() {
-        document.removeDialog(lvDialogs.getSelectionModel().getSelectedItem().getDialogID());
-        refresh();
+        String id = lvDialogs.getSelectionModel().getSelectedItem().getDialogID();
+        removeDialogFromMenu(id);
+        document.removeDialog(id);
+        refreshDialogs();
+        refreshAnswers();
+        refreshAns();
     }
 
     public void saveQuestion() { //saveEvent
         //TODO source
         actualDialog.getEvent().setRawText(taQuestion.getText());
         tp3.getSelectionModel().select(2);
+        document.addOrRefreshDialog(actualDialog);
     }
 
     public void saveAnswer() { //saveResponse
@@ -245,12 +238,14 @@ public class FXMLmainController implements Initializable {
             //TODO exeCute pro zapamatování
         }
         actualResponse.setTarget(target);
-        refresh();
+         document.addOrRefreshDialog(actualDialog);
+        refreshAnswers();
+        refreshAns();
     }
 
     public void newAnswer() { //newResponse
 
-        actualResponse = new Response("");
+        actualResponse = new Response("...");
         mbCondition.setText("žádná");
         mbTarget.setText("Konec");
         //condition = "";
@@ -258,7 +253,8 @@ public class FXMLmainController implements Initializable {
         cbTokenRemember.setSelected(false);
         tfTokenRemember.setDisable(true);
         actualDialog.addResponse(actualResponse);
-        refresh();
+        refreshAnswers();
+        refreshAns();
     }
 
     public void checkBox() {
@@ -268,21 +264,23 @@ public class FXMLmainController implements Initializable {
 
     public void editAnswer() {
         actualResponse = lvAnswers.getSelectionModel().getSelectedItem();
-        refresh();
+        refreshAnswers();
+        refreshAns();
     }
 
     public void deleteAnswer() {
         actualDialog.removeResponse(lvAnswers.getSelectionModel().getSelectedItem());
-        refresh();
+        refreshAnswers();
+        refreshAns();
     }
 
-    public void fillTokens() {
+    public void fillTokens() { //bude překopáno s příchodem podmínek
         mbCondition.getItems().get(0).setOnAction((ActionEvent t) -> {
             mbCondition.setText("žádná");
-           // condition = "";
+            // condition = "";
             chbCondition.setDisable(true);
         });
-     /*   Menu m = (Menu) mbCondition.getItems().get(1);
+        /*   Menu m = (Menu) mbCondition.getItems().get(1);
         m.getItems().clear();
         if (answerstokens == null) {
             answerstokens = IO.getAnswerTokens(new File("answers"));
@@ -296,20 +294,70 @@ public class FXMLmainController implements Initializable {
             });
             m.getItems().add(item);
         });
-*/
+         */
+
+    }
+
+    public void fillTargets() {
         mbTarget.getItems().get(0).setOnAction((ActionEvent t) -> {
             mbTarget.setText("Konec");
             target = "exit()";
         });
-        Menu m2 = (Menu) mbTarget.getItems().get(1);
-        m2.getItems().clear();
-        dialogs.stream().forEach((Dialog d) -> {
-            MenuItem item = new MenuItem(d.toString());
-            item.setOnAction((ActionEvent t) -> {
-                mbTarget.setText(d.getDialogID());
-                target = d.getDialogID();
+
+        Menu subMenu = (Menu) mbTarget.getItems().get(1);
+        boolean exists = false;
+        MenuItem[] menuArray = subMenu.getItems().toArray(new MenuItem[0]);
+        for (MenuItem menu : menuArray) {
+            if (menu.getText().equals(filePath)) {
+                exists = true;
+            }
+        }
+        if (!exists) {
+            Menu newFileMenu = new Menu(filePath);
+            document.getAllDialogsIDs().forEach((String id) -> {
+                MenuItem item = new MenuItem(id);
+                item.setOnAction((ActionEvent t) -> {
+                    mbTarget.setText(id);
+                    target = filePath.replace(projectFolder + "\\", "");
+                });
+                newFileMenu.getItems().add(item);
             });
-            m2.getItems().add(item);
+            subMenu.getItems().add(newFileMenu);
+        }
+    }
+
+    /**
+     * Add dialog to menu of avilible targets under the correct file.
+     *
+     * @param id - Dialog ID added to avilible targets
+     */
+    public void addDialogToMenu(String id) {
+        MenuItem item = new MenuItem(id);
+        item.setOnAction((ActionEvent t) -> {
+            mbTarget.setText(id);
+            target = filePath.replace(projectFolder + "\\", "");
+        });
+        ((Menu) mbTarget.getItems().get(1)).getItems().forEach((MenuItem subMenu) -> {
+            if (subMenu.getText().equals(filePath)) {
+                ((Menu) subMenu).getItems().add(item);
+            }
+        });
+    }
+
+    /**
+     * Remove dialog from menu of avilible targets.
+     *
+     * @param id - Dialog ID removed from avilible targets
+     */
+    public void removeDialogFromMenu(String id) {
+        ((Menu) mbTarget.getItems().get(1)).getItems().forEach((MenuItem subMenu) -> {
+            if (subMenu.getText().equals(filePath)) {
+                ((Menu) subMenu).getItems().forEach((MenuItem item) -> {
+                    if (item.getText().equals(id)) {
+                        ((Menu) subMenu).getItems().remove(item);
+                    }
+                });
+            }
         });
     }
 }

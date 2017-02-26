@@ -156,4 +156,10 @@ public class Dialog {
     public Response[] getAllResponsesArray() {
             return responses.toArray(new Response[responses.size()]);
     }
+
+    @Override
+    public String toString() {
+        return event.getRawText(); 
+    }
+       
 }

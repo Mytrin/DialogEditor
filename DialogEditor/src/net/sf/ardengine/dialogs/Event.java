@@ -52,11 +52,11 @@ public class Event {
         Element textTag = new Element(TAG_TEXT);
             textTag.setText(rawText);
             
-        Element response = new Element(TAG_EVENT);
-            response.getChildren().add(response);
-            response.setAttribute(ATTR_SOURCE, sourceID);
+        Element event = new Element(TAG_EVENT);
+            event.getChildren().add(textTag);
+            event.setAttribute(ATTR_SOURCE, sourceID);
             
-        return response;
+        return event;
     }
     
     /**

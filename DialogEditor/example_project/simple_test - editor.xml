@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	
+	<dialog id="easy-variable-test">
+
+		<event source="testificate">
+        		<text>$Test1</text>
+		</event>
+
+		<responses>
+        		<response target="exit()">
+            			<text>$Test2!</text>
+			</response>
+		</responses>
+	</dialog>
+<dialog id="easy-test"><event source="testificate"><text>Hello there traveler, what brings you to Javaland?dsf</text></event><responses><response target="exit()"><text>Leave me be!</text></response><response target="exit()"><text>I seek fortune and glory!</text></response><response target="D:\Programovani\DialogEditor_git\DialogEditor\example_project\simple_test – kopie.xml"><text>...sdf</text></response></responses></dialog></root>
