@@ -4,6 +4,8 @@ import com.google.gson.JsonIOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import net.sf.ardengine.dialogs.Dialog;
 import net.sf.ardengine.dialogs.DialogEditorException;
@@ -134,6 +136,32 @@ public class LoadedDocument {
                            t.getAttributeValue(Dialog.ATTR_DIALOG_ID).equals(dialogID);
                 }).findFirst();
     }
+    
+    /**
+     * @return All Dialogs saved within this file.
+     */
+    public List<Dialog> getAllDialogs(){
+        List<Dialog> allDialogs = new LinkedList<>();
+        
+        loadedXML.getRootElement().getChildren(Dialog.TAG_DIALOG).forEach((Element t) -> {
+            allDialogs.add(new Dialog(t));
+        });
+        
+        return allDialogs;
+    }   
+    
+    /**
+     * @return All IDs of Dialogs saved within this file.
+     */
+    public List<String> getAllDialogsIDs(){
+        List<String> allDialogsIDs = new LinkedList<>();
+        
+        loadedXML.getRootElement().getChildren(Dialog.TAG_DIALOG).forEach((Element t) -> {
+            allDialogsIDs.add(t.getAttributeValue(Dialog.ATTR_DIALOG_ID));
+        });
+        
+        return allDialogsIDs;
+    }  
    
     /**
      * @return True if there has been changes in xml
