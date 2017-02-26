@@ -75,7 +75,7 @@ public class FXMLmainController implements Initializable {
     LoadedDocument document;
     Dialog actualDialog;
     Response actualResponse;
-    String  fileName,target;
+    String fileName, target;
     ObservableList<Dialog> dialogs;
     ObservableList<Response> answers;
 
@@ -88,7 +88,7 @@ public class FXMLmainController implements Initializable {
         chbCondition.getSelectionModel().selectFirst();
     }
 
-/*    private void refreshDialogs() {
+    /*    private void refreshDialogs() {
         dialogs = FXCollections.observableArrayList();
         koren.getDialogs().stream().forEach((dialog) -> {
             dialogs.add(dialog);
@@ -108,7 +108,7 @@ public class FXMLmainController implements Initializable {
         }
     }*/
 
-   /* private void refreshAns() {
+ /* private void refreshAns() {
 
         if (ans == null) {
             pAnswer.setDisable(true);
@@ -154,15 +154,14 @@ public class FXMLmainController implements Initializable {
         }
 
     }*/
-
     private void refresh() {
         refreshDialogs();
         refreshAnswers();
         refreshAns();
-     
+
     }
 
-  private String dialogWindow(String dotaz) {
+    private String dialogWindow(String dotaz) {
         TextInputDialog dialog = new TextInputDialog("");
         dialog.setHeaderText(null);
         dialog.setContentText(dotaz);
@@ -213,7 +212,7 @@ public class FXMLmainController implements Initializable {
 
     public void newDialog() {
         String id = dialogWindow("Zadejte id dialogu:");
-      //  ans = null;
+        //  ans = null;
         actualDialog = new Dialog(id, new Event("Undefined", ""), new ArrayList<>());
         tabChosenDialog.setDisable(false);
         tp2.getSelectionModel().select(2);
@@ -222,7 +221,7 @@ public class FXMLmainController implements Initializable {
 
     public void editDialog() {
         actualDialog = lvDialogs.getSelectionModel().getSelectedItem();
-      //  ans = null;
+        //  ans = null;
         refresh();
         tabChosenDialog.setDisable(false);
         tp2.getSelectionModel().select(2);
@@ -234,38 +233,31 @@ public class FXMLmainController implements Initializable {
     }
 
     public void saveQuestion() { //saveEvent
-       //TODO source
-       actualDialog.getEvent().setRawText(taQuestion.getText());
+        //TODO source
+        actualDialog.getEvent().setRawText(taQuestion.getText());
         tp3.getSelectionModel().select(2);
     }
 
     public void saveAnswer() { //saveResponse
-        actualResponse = new Response(taAnswer.getText());
-        
+        actualResponse.setRawText(taAnswer.getText());
+
         if (cbTokenRemember.isSelected()) {
-           //TODO exeCute pro zapamatování
-        } 
+            //TODO exeCute pro zapamatování
+        }
         actualResponse.setTarget(target);
-        
-        
         refresh();
     }
 
-    public void newAnswer() {
-        int id;
-        if (answers.size() == 0) {
-            id = 0;
-        } else {
-            id = answers.get(answers.size() - 1).getId() + 1;
-        }
-        ans = new AnsShard(id, "", "", "", "Odpověď");
+    public void newAnswer() { //newResponse
+
+        actualResponse = new Response("");
         mbCondition.setText("žádná");
-        mbFunction.setText("Konec");
-        condition = "";
-        function = "";
+        mbTarget.setText("Konec");
+        //condition = "";
+        target = "exit()";
         cbTokenRemember.setSelected(false);
         tfTokenRemember.setDisable(true);
-        dial.getAnswers().addAnswer(ans);
+        actualDialog.addResponse(actualResponse);
         refresh();
     }
 
@@ -275,30 +267,22 @@ public class FXMLmainController implements Initializable {
     }
 
     public void editAnswer() {
-        ans = dial.getAnswers().getAnswers().get(lvAnswers.getSelectionModel().getSelectedIndex());
+        actualResponse = lvAnswers.getSelectionModel().getSelectedItem();
         refresh();
     }
 
     public void deleteAnswer() {
-        if (lvAnswers.getSelectionModel().getSelectedIndex() >= 0) {
-            AnsShard buff = dial.getAnswers().getAnswers().get(lvAnswers.getSelectionModel().getSelectedIndex());
-            if (ans != null) {
-                if (buff.getId() == ans.getId()) {
-                    ans = null;
-                }
-            }
-            buff.getElement().detach();
-            refresh();
-        }
+        actualDialog.removeResponse(lvAnswers.getSelectionModel().getSelectedItem());
+        refresh();
     }
 
     public void fillTokens() {
         mbCondition.getItems().get(0).setOnAction((ActionEvent t) -> {
             mbCondition.setText("žádná");
-            condition = "";
+           // condition = "";
             chbCondition.setDisable(true);
         });
-        Menu m = (Menu) mbCondition.getItems().get(1);
+     /*   Menu m = (Menu) mbCondition.getItems().get(1);
         m.getItems().clear();
         if (answerstokens == null) {
             answerstokens = IO.getAnswerTokens(new File("answers"));
@@ -312,7 +296,7 @@ public class FXMLmainController implements Initializable {
             });
             m.getItems().add(item);
         });
-
+*/
         mbTarget.getItems().get(0).setOnAction((ActionEvent t) -> {
             mbTarget.setText("Konec");
             target = "exit()";
