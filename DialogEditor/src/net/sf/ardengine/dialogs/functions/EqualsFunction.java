@@ -13,6 +13,7 @@ import org.jdom2.Element;
  *  value2 - any value
  * Optional:
  *  negate - "true"/"false"
+ *  target - variablePath - saves answer to given variable
  */
 public class EqualsFunction extends ACompareFunction{
     
@@ -25,13 +26,12 @@ public class EqualsFunction extends ACompareFunction{
     }
 
     @Override
-    public void execute(VariableTranslator translator, Element element) {
-        executed = true;
+    public void execute(VariableLoader loader, VariableTranslator translator, Element element) {
+        String arg1 = element.getAttributeValue(ACompareFunction.ATTR_ARG1);
+        String arg2 = element.getAttributeValue(ACompareFunction.ATTR_ARG2);
         
-        String arg1 = element.getAttributeValue(ACompareFunction.ARG1);
-        String arg2 = element.getAttributeValue(ACompareFunction.ARG2);
-        
-        answer = (arg1 == null ? arg2 == null : arg1.equals(arg2));
+        boolean answer = (arg1 == null ? arg2 == null : arg1.equals(arg2));
+        setAnswer(loader, translator, element, answer);
     }
 
 }

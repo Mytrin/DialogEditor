@@ -11,15 +11,19 @@ import net.sf.ardengine.dialogs.variables.VariableTranslator;
  */
 public class FunctionsTranslator {
 
-    /**Stored JSON variable documents*/
+    /**Stored for saving and manipulating with variables*/
+    private final VariableLoader loader;
+    /**Stored fro variable translation*/
     private final VariableTranslator translator;
     /**Stored available functions*/
     private final FunctionClassifier functions = new FunctionClassifier();
     
     /**
-     * @param varTranslator Object responsible fro changing variable names to their value
+     * @param loader Object responsible for saving of variables
+     * @param varTranslator Object responsible for changing variable names to their value
      */
-    public FunctionsTranslator(VariableTranslator varTranslator) {
+    public FunctionsTranslator(VariableLoader loader, VariableTranslator varTranslator) {
+        this.loader = loader;
         this.translator = varTranslator;
     }
     

@@ -31,7 +31,7 @@ public class Dialogs {
     /**Class responsible for variable translating*/
     private final VariableTranslator variableTranslator = new VariableTranslator(variables);
     /**Class responsible for execute and condition*/
-    private final FunctionsTranslator functionTranslator = new FunctionsTranslator(variableTranslator);
+    private final FunctionsTranslator functionTranslator = new FunctionsTranslator(variables, variableTranslator);
 
     /**Actual dialog*/
     private Dialog activeDialog;

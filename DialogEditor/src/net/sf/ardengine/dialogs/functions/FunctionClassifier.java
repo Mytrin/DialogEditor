@@ -15,6 +15,11 @@ public class FunctionClassifier {
      * Loads default functions
      */
     protected FunctionClassifier() {
+        //Variable comparation
+        loadedFunctions.put(EqualsFunction.NAME, new EqualsFunction());
+        loadedFunctions.put(GreaterFunction.NAME, new GreaterFunction());
+        loadedFunctions.put(LowerFunction.NAME, new LowerFunction());
+        //Variable manipulation
         
     }
 

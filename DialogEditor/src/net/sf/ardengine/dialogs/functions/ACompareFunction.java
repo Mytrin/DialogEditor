@@ -1,6 +1,9 @@
 package net.sf.ardengine.dialogs.functions;
 
+import com.google.gson.JsonPrimitive;
 import net.sf.ardengine.dialogs.DialogEditorException;
+import net.sf.ardengine.dialogs.variables.VariableLoader;
+import net.sf.ardengine.dialogs.variables.VariableTranslator;
 import org.jdom2.Element;
 
 /**
@@ -9,27 +12,39 @@ import org.jdom2.Element;
 public abstract class ACompareFunction implements IFunction<Boolean>{
    
     /**Compulsory argument names*/
-    protected static final String ARG1 = "value1";
-    protected static final String ARG2 = "value2";
+    protected static final String ATTR_ARG1 = "value1";
+    protected static final String ATTR_ARG2 = "value2";
     
     /**Optional argument names*/
-    private static final String NEGATE = "negate";
+    private static final String ATTR_NEGATE = "negate";
     
     private static final String NUMBER_PATTERN = "^\\d*\\.?\\d*$";
     
     /**True, execute() has been called*/
-    protected boolean executed = false;
+    private boolean executed = false;
     /**Return value of this function*/   
-    protected boolean answer;
-    
-    /**
-     * @param element element calling this function
-     * @return true, if negate arguments is true
-     */
-    protected boolean haveToNegate(Element element){
-        String negateValue = element.getAttributeValue(NEGATE);
+    private boolean answer;
         
-        return (negateValue!= null && negateValue.toLowerCase().equals(VALUE_TRUE));
+    /**
+     * Updates answer property according to negate and target attributes
+     * @param loader Object responsible for saving answer to variable, if required
+     * @param translator Object responsible for replacing variable names with their value
+     * @param element element calling this function
+     * @param answer child operation answer
+     */
+    protected void setAnswer(VariableLoader loader, VariableTranslator translator, Element element, boolean answer){
+        executed = true;
+        
+        if(FunctionUtil.translateAttributeAsBoolean(translator, element, ATTR_NEGATE)){
+            this.answer = !answer;
+        }else{
+            this.answer = answer; 
+        }
+        
+        String targetVar = FunctionUtil.translateAttributeAsString(translator, element, IFunction.ATTR_TARGET);
+        if(targetVar != null){
+            loader.setVariable(targetVar, new JsonPrimitive(answer));
+        }
     }
     
     /**
@@ -42,12 +57,12 @@ public abstract class ACompareFunction implements IFunction<Boolean>{
     
     @Override
     public String[] getCompulsoryArgsNames() {
-        return new String[]{ARG1, ARG2};
+        return new String[]{ATTR_ARG1, ATTR_ARG2};
     }
 
     @Override
     public String[] getOptionalArgsNames() {
-        return new String[]{NEGATE};
+        return new String[]{IFunction.ATTR_TARGET, ATTR_NEGATE};
     }
 
     @Override

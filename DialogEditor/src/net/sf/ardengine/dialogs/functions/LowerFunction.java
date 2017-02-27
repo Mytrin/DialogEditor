@@ -5,7 +5,7 @@ import net.sf.ardengine.dialogs.variables.VariableTranslator;
 import org.jdom2.Element;
 
 /**
- * Compares if first argument is greater than second.
+ * Compares if first argument is lower than second.
  *     
  * Name: "GREATER_THAN"
  * Compulsory:
@@ -15,10 +15,10 @@ import org.jdom2.Element;
  *  negate - "true"/"false"
  *  target - variablePath - saves answer to given variable
  */
-public class GreaterFunction extends ACompareFunction{
+public class LowerFunction extends ACompareFunction{
     
     /**Function unique name*/
-    public static final String NAME = "GREATER_THAN";
+    public static final String NAME = "LOWER_THAN";
     
     @Override
     public String getFunctionName() {
@@ -33,7 +33,7 @@ public class GreaterFunction extends ACompareFunction{
         if(arg1 == null || arg2 ==null){
             setAnswer(loader, translator, element, false);
         }else{
-            setAnswer(loader, translator, element, arg1.doubleValue() > arg2.doubleValue());
+            setAnswer(loader, translator, element, arg1.doubleValue()<arg2.doubleValue());
         }
     }
     

@@ -15,6 +15,9 @@ public interface IFunction<T> {
     /**Value for arguments, which value is false*/
     public static final String VALUE_FALSE = "false";
     
+    /**Optional argument names*/
+    public static final String ATTR_TARGET = "target";
+    
     /**
      * @return Name of this function, must be unique, otherwise it covers original
      */
@@ -32,10 +35,11 @@ public interface IFunction<T> {
     
     /**
      * Executes this function. If it has any return value, it will be stored within getAnswer();
-     * @param translator Available variables
+     * @param loader Enables storing and editing variables
+     * @param translator Enables reading variables
      * @param element execute or response element, used to get arguments
      */
-    public void execute(VariableTranslator translator, Element element);
+    public void execute(VariableLoader loader, VariableTranslator translator, Element element);
     
     /**
      * Call after execute()!
