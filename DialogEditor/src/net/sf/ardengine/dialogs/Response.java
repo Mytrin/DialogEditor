@@ -11,9 +11,10 @@ import org.jdom2.Element;
  *                              or exit() to signal end of conversation.
  *                              ["dialogID";"/Path/To/File/dialogID/";"exit()"]
  * 
- *   Optional “condition”  - type of condition
- *   Optional “convalueX”  - Xth value for condition evaluation
- *   Optional “negate”     - should the condition result be negated? [true/false]
+ *   Optional “condition”  - name of function
+ *  
+ *  Depends on condition:
+ *   Depends of type of function called
  * 
  * Inner tag: text  -   contains text representing this response
  *   

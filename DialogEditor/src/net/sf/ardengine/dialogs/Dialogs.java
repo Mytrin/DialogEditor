@@ -29,9 +29,9 @@ public class Dialogs {
     /**Stored JSON variable documents*/
     private final VariableLoader variables = new VariableLoader();
     /**Class responsible for variable translating*/
-    private final VariableTranslator variableTranslator = new VariableTranslator(this);
+    private final VariableTranslator variableTranslator = new VariableTranslator(variables);
     /**Class responsible for execute and condition*/
-    private final FunctionsTranslator functionTranslator = new FunctionsTranslator(this);
+    private final FunctionsTranslator functionTranslator = new FunctionsTranslator(variableTranslator);
 
     /**Actual dialog*/
     private Dialog activeDialog;
