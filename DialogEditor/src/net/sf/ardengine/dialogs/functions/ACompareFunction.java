@@ -4,7 +4,6 @@ import com.google.gson.JsonPrimitive;
 import net.sf.ardengine.dialogs.DialogEditorException;
 import net.sf.ardengine.dialogs.variables.VariableLoader;
 import net.sf.ardengine.dialogs.variables.VariableTranslator;
-import org.jdom2.Element;
 
 /**
  * Base for compare functions, contains arguments names and negate attribute logic.
@@ -29,19 +28,19 @@ public abstract class ACompareFunction implements IFunction<Boolean>{
      * Updates answer property according to negate and target attributes
      * @param loader Object responsible for saving answer to variable, if required
      * @param translator Object responsible for replacing variable names with their value
-     * @param element element calling this function
+     * @param attributes attributes of element calling this function
      * @param answer child operation answer
      */
-    protected void setAnswer(VariableLoader loader, VariableTranslator translator, Element element, boolean answer){
+    protected void setAnswer(VariableLoader loader, VariableTranslator translator, FunctionAttributes attributes, boolean answer){
         executed = true;
         
-        if(FunctionUtil.translateAttributeAsBoolean(translator, element, ATTR_NEGATE)){
+        if(FunctionUtil.translateAttributeAsBoolean(translator, attributes, ATTR_NEGATE)){
             this.answer = !answer;
         }else{
             this.answer = answer; 
         }
         
-        String targetVar = FunctionUtil.translateAttributeAsString(translator, element, IFunction.ATTR_TARGET);
+        String targetVar = FunctionUtil.translateAttributeAsString(translator, attributes, IFunction.ATTR_TARGET);
         if(targetVar != null){
             loader.setVariable(targetVar, new JsonPrimitive(answer));
         }

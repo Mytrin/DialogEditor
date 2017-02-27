@@ -2,6 +2,8 @@ package net.sf.ardengine.dialogs.functions;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Contains a HashMap of loaded function instances.
@@ -28,7 +30,14 @@ public class FunctionClassifier {
      * @return IFunction with such name, or null, if it does not exists
      */
     protected IFunction getFunction(String functionName){
-        return loadedFunctions.get(functionName);
+        IFunction foundFunction = loadedFunctions.get(functionName);
+        
+        if(foundFunction == null){
+            Logger.getLogger(FunctionClassifier.class.getName()).log(
+                           Level.WARNING, "Called function {0} not found!", functionName);
+        }
+        
+        return foundFunction;
     }
     
     /**

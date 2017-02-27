@@ -26,14 +26,14 @@ public class LowerFunction extends ACompareFunction{
     }
     
     @Override
-    public void execute(VariableLoader loader, VariableTranslator translator, Element element) {        
-        Number arg1 = FunctionUtil.translateAttributeAsNumber(translator, element, ACompareFunction.ATTR_ARG1);
-        Number arg2 = FunctionUtil.translateAttributeAsNumber(translator, element, ACompareFunction.ATTR_ARG2);
+    public void execute(VariableLoader loader, VariableTranslator translator,  FunctionAttributes attributes) {        
+        Number arg1 = FunctionUtil.translateAttributeAsNumber(translator, attributes, ACompareFunction.ATTR_ARG1);
+        Number arg2 = FunctionUtil.translateAttributeAsNumber(translator, attributes, ACompareFunction.ATTR_ARG2);
 
         if(arg1 == null || arg2 ==null){
-            setAnswer(loader, translator, element, false);
+            setAnswer(loader, translator, attributes, false);
         }else{
-            setAnswer(loader, translator, element, arg1.doubleValue()<arg2.doubleValue());
+            setAnswer(loader, translator, attributes, arg1.doubleValue()<arg2.doubleValue());
         }
     }
     

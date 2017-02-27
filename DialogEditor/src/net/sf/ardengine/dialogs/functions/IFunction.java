@@ -2,7 +2,6 @@ package net.sf.ardengine.dialogs.functions;
 
 import net.sf.ardengine.dialogs.variables.VariableLoader;
 import net.sf.ardengine.dialogs.variables.VariableTranslator;
-import org.jdom2.Element;
 
 /**
  * Interface for new functions, object referenced by execute elements 
@@ -16,7 +15,7 @@ public interface IFunction<T> {
     public static final String VALUE_FALSE = "false";
     
     /**Optional argument names*/
-    public static final String ATTR_TARGET = "target";
+    public static final String ATTR_TARGET = "taget-var";
     
     /**
      * @return Name of this function, must be unique, otherwise it covers original
@@ -37,9 +36,9 @@ public interface IFunction<T> {
      * Executes this function. If it has any return value, it will be stored within getAnswer();
      * @param loader Enables storing and editing variables
      * @param translator Enables reading variables
-     * @param element execute or response element, used to get arguments
+     * @param attributes attributes of execute or response element, used to get arguments
      */
-    public void execute(VariableLoader loader, VariableTranslator translator, Element element);
+    public void execute(VariableLoader loader, VariableTranslator translator, FunctionAttributes attributes);
     
     /**
      * Call after execute()!

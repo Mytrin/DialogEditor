@@ -26,12 +26,12 @@ public class EqualsFunction extends ACompareFunction{
     }
 
     @Override
-    public void execute(VariableLoader loader, VariableTranslator translator, Element element) {
-        String arg1 = element.getAttributeValue(ACompareFunction.ATTR_ARG1);
-        String arg2 = element.getAttributeValue(ACompareFunction.ATTR_ARG2);
+    public void execute(VariableLoader loader, VariableTranslator translator, FunctionAttributes attributes) {
+        String arg1 = attributes.getAttributeValue(ACompareFunction.ATTR_ARG1);
+        String arg2 = attributes.getAttributeValue(ACompareFunction.ATTR_ARG2);
         
         boolean answer = (arg1 == null ? arg2 == null : arg1.equals(arg2));
-        setAnswer(loader, translator, element, answer);
+        setAnswer(loader, translator, attributes, answer);
     }
 
 }

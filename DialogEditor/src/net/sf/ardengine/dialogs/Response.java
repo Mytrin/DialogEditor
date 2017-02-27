@@ -1,5 +1,6 @@
 package net.sf.ardengine.dialogs;
 
+import net.sf.ardengine.dialogs.functions.FunctionAttributes;
 import org.jdom2.Element;
 
 /**
@@ -36,6 +37,8 @@ public class Response {
     
     /**Attribute name of target*/
     private static final String ATTR_TARGET="target";
+    /**Attribute name of function*/
+    private static final String ATTR_CONDITION="condition";
     
     
     /**Text rendered as this event without translated variables*/
@@ -44,7 +47,11 @@ public class Response {
     private String translatedText;
     /**Path and ID of target dialog*/
     private String target;
-
+    /**True if condition has been fulfilled*/
+    private boolean isAvailable = true;
+    /**Contains info about possibly called function*/
+    private final FunctionAttributes functionArgs;
+    
     /**
      * 
      * @param rawText text rendered as this response without translated variables
@@ -61,6 +68,7 @@ public class Response {
     public Response(String rawText) {
         this.rawText = rawText;
         this.target = EXIT_RESPONSE;
+        this.functionArgs = new FunctionAttributes(ATTR_CONDITION);
     }
     
     /**
@@ -70,6 +78,7 @@ public class Response {
     public Response(Element responseElement) {
         this.rawText = responseElement.getChild(TAG_TEXT).getText();
         this.target = responseElement.getAttributeValue(ATTR_TARGET);
+        this.functionArgs = new FunctionAttributes(responseElement, ATTR_CONDITION);
     }
 
     /**
@@ -82,6 +91,7 @@ public class Response {
         Element response = new Element(TAG_RESPONSE);
             response.getChildren().add(textTag);
             response.setAttribute(ATTR_TARGET, target);
+            functionArgs.save(response);
             
         return response;
     }
@@ -127,4 +137,25 @@ public class Response {
         return rawText;
     }
 
+    /**
+     * @return Object containing access to condition settings
+     */
+    public FunctionAttributes getFunctionAttributes() {
+        return functionArgs;
+    }
+
+    /**
+     * @return True if condition has been fulfilled and Game can show them to player
+     */
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    /**
+     * Used by FunctionsTranslator.
+     * @param isAvailable  True if condition has been fulfilled and Game can show them to player
+     */
+    public void setAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
 }

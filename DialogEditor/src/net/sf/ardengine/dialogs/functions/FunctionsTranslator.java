@@ -1,7 +1,11 @@
 package net.sf.ardengine.dialogs.functions;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.ardengine.dialogs.Dialog;
+import net.sf.ardengine.dialogs.Response;
 import net.sf.ardengine.dialogs.variables.VariableLoader;
 import net.sf.ardengine.dialogs.variables.VariableTranslator;
 
@@ -33,7 +37,27 @@ public class FunctionsTranslator {
      * @param dialog Dialog without executed execute elements and disabled responses
      */
     public void process(Dialog dialog){
+        //TODO execute elements first!
         
+        dialog.getAvailableResponses().forEach((Response t) -> {
+            
+           FunctionAttributes functionAttributes = t.getFunctionAttributes();
+           String functionName = functionAttributes.getFunctionName();
+           
+           if(functionName != null){
+               IFunction function = functions.getFunction(functionName);
+               
+               if(function != null){
+                   function.execute(loader, translator, functionAttributes);
+                   
+                   Object answer = function.getAnswer();
+                   
+                   if(answer instanceof Boolean){
+                       t.setAvailable((Boolean)answer);
+                   }
+               }
+           }
+        });
     }
     
     /**
