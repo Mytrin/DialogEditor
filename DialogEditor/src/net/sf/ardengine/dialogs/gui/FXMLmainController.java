@@ -29,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.sf.ardengine.dialogs.Dialog;
@@ -70,7 +71,7 @@ public class FXMLmainController implements Initializable {
     @FXML
     Label lFile;
     @FXML
-    Tab tabChosenDialog;
+    Tab tabChosenDialog, tabDialogs, tabFile;
     @FXML
     Pane pAnswer;
     LoadedDocument document;
@@ -79,6 +80,7 @@ public class FXMLmainController implements Initializable {
     String fileName, target, projectFolder, filePath;
     ObservableList<Dialog> dialogs;
     ObservableList<Response> answers;
+     SAXBuilder jdomBuilder;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -86,9 +88,11 @@ public class FXMLmainController implements Initializable {
         anoNe.add("Ano");
         anoNe.add("Ne");
         chbCondition.setItems(anoNe);
-        chbCondition.getSelectionModel().selectFirst();
+        chbCondition.getSelectionModel().selectFirst();  
+        jdomBuilder = new SAXBuilder();
     }
 
+    
     private void refreshDialogs() {
         dialogs = FXCollections.observableArrayList();
         document.getAllDialogs().forEach((dialog) -> {
@@ -148,18 +152,25 @@ public class FXMLmainController implements Initializable {
         return "0";
     }
 
+    public void openProject() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("JavaFX Projects");
+        File defaultDirectory = new File("\\");
+        chooser.setInitialDirectory(defaultDirectory);
+        projectFolder = (chooser.showDialog((Stage) (ap.getScene().getWindow()))).getAbsolutePath();
+        tabDialogs.setDisable(false);
+        tabFile.setDisable(false);
+    }
+
     public void openFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Otevřít dialogový soubor.");
-        File directory = new File("\\");                     //TODO
+        File directory = new File(projectFolder);
         fileChooser.setInitialDirectory(directory);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
         File file = fileChooser.showOpenDialog((Stage) (ap.getScene().getWindow()));
-        Document jdomDocument;
         try {
-            SAXBuilder jdomBuilder = new SAXBuilder();
-            jdomDocument = jdomBuilder.build(file);
-            document = new LoadedDocument(file, jdomDocument);
+            document = new LoadedDocument(file, jdomBuilder.build(file));
         } catch (JDOMException | IOException ex) {
             Logger.getLogger(FXMLmainController.class.getName()).log(Level.SEVERE, null, ex);
             //throw some cool exception
@@ -175,8 +186,8 @@ public class FXMLmainController implements Initializable {
 
     public void newFile() {
         fileName = dialogWindow("Zadejte název souboru: "); //TODO cesta
-        lFile.setText(fileName);
-        document = new LoadedDocument(new File(fileName), new Document(new Element("root")));
+        lFile.setText(fileName+".xml");
+        document = new LoadedDocument(new File(projectFolder + "\\" +fileName), new Document(new Element("root")));
         filePath = document.source.getAbsolutePath();
         fillTargets();
         refreshDialogs();
@@ -200,6 +211,7 @@ public class FXMLmainController implements Initializable {
         actualResponse = null;
         actualDialog = new Dialog(id, new Event("", "Undefined"), new ArrayList<>());
         tabChosenDialog.setDisable(false);
+        document.addOrRefreshDialog(actualDialog);
         tp2.getSelectionModel().select(2);
         refreshDialogs();
         refreshAnswers();
@@ -238,7 +250,7 @@ public class FXMLmainController implements Initializable {
             //TODO exeCute pro zapamatování
         }
         actualResponse.setTarget(target);
-         document.addOrRefreshDialog(actualDialog);
+        document.addOrRefreshDialog(actualDialog);
         refreshAnswers();
         refreshAns();
     }

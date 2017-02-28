@@ -161,7 +161,7 @@ public class Dialog {
 
     @Override
     public String toString() {
-        return event.getRawText(); 
+        return "id: "+getDialogID(); 
     }
        
 }
