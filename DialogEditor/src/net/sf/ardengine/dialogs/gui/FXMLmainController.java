@@ -176,7 +176,7 @@ public class FXMLmainController implements Initializable {
     public void newFile() {
         fileName = dialogWindow("Zadejte název souboru: "); //TODO cesta
         lFile.setText(fileName);
-        document = new LoadedDocument(new File(fileName), (new Element("root")).getDocument());
+        document = new LoadedDocument(new File(fileName), new Document(new Element("root")));
         filePath = document.source.getAbsolutePath();
         fillTargets();
         refreshDialogs();

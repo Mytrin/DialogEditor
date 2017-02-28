@@ -38,6 +38,7 @@ public class Dialog {
      * @param responses Available responses
      */
     public Dialog(String dialogID, Event event, List<Response> responses) {
+        this.dialogID=dialogID;
         this.event = event;
         this.responses.addAll(responses);
     }
