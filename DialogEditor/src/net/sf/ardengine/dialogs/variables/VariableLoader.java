@@ -36,8 +36,8 @@ public class VariableLoader extends AResourceLoader<LoadedVariables>{
     /**JSON Parser*/
     private final JsonParser gsonParser = new JsonParser();
     
-    /**JSON builder*/
-    private final Gson gsonBuilder = new GsonBuilder().create();
+    /**JSON builder with reasonable format*/
+    private final Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
     
     /**File with variable with unspecified file path*/
     private LoadedVariables globals;

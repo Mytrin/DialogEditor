@@ -8,6 +8,7 @@ package net.sf.ardengine.dialogs.functions;
 import com.google.gson.JsonPrimitive;
 import net.sf.ardengine.dialogs.Dialog;
 import net.sf.ardengine.dialogs.Dialogs;
+import net.sf.ardengine.dialogs.Response;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -29,7 +30,19 @@ public class FunctionsTranslatorTest {
         
         System.out.println(dialog.getEvent().getText());
         
-        int testCount = dialogs.getVariable("function_test:CurrentTest").getAsInt() + 1;
+        Response[] responses = dialog.getAllResponsesArray();
+        
+        for(Response r : responses){
+            System.out.println("R["+(r.isAvailable()?"A":"N")+"]: "+r.getText());
+        }
+        
+        assertEquals(responses[0].isAvailable(), false);
+        assertEquals(responses[1].isAvailable(), true);
+        
+        int testCount = dialogs.getVariable("function_test:CurrentTest").getAsInt();
+        assertEquals(responses[2].isAvailable(), testCount > 20);
+        
+        testCount++;
         dialogs.setVariable("function_test:CurrentTest", new JsonPrimitive(testCount));
         dialogs.saveVariableChanges("function_test");
     }

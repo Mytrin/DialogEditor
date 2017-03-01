@@ -20,7 +20,9 @@ public class FunctionUtil {
      * @return Value of text after replacing variable names with their value
      */
     public static String translateAttributeAsString(VariableTranslator translator, FunctionAttributes attributes, String attrName){
-        return translator.process(attributes.getAttributeValue(attrName));
+        String attrValue = attributes.getAttributeValue(attrName);
+        if(attrValue == null) return null;
+        return translator.process(attrValue);
     }
     
     
@@ -32,9 +34,11 @@ public class FunctionUtil {
      * or null if parsing fails.
      */
     public static Number translateAttributeAsNumber(VariableTranslator translator, FunctionAttributes attributes, String attrName){
-        String attrValue =  translator.process(attributes.getAttributeValue(attrName));
-        Number parsedNumber = null;
+        String attrValue =  translateAttributeAsString(translator, attributes, attrName);
+
+        if(attrValue == null) return null;
         
+        Number parsedNumber = null;
         try{
             if(attrValue.contains(NUMBER_PATTERN)){
                 parsedNumber = Double.parseDouble(attrValue);
@@ -43,7 +47,7 @@ public class FunctionUtil {
             }
         }catch(Exception e){
             Logger.getLogger(FunctionUtil.class.getName()).log(Level.WARNING, 
-                    "Failed totranslate {0} as number!", attrValue);
+                    "Failed to translate {0} as number!", attrValue);
         }
         
         return parsedNumber;
@@ -57,7 +61,7 @@ public class FunctionUtil {
      * @return Boolean value of text after replacing variable names with their value
      */
     public static Boolean translateAttributeAsBoolean(VariableTranslator translator, FunctionAttributes attributes, String attrName){
-         String attrValue = translator.process(attributes.getAttributeValue(attrName));
+         String attrValue =  translateAttributeAsString(translator, attributes, attrName);
          
          return (attrValue != null && attrValue.trim().toLowerCase().equals(IFunction.VALUE_TRUE));
     }

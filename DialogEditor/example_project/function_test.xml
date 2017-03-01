@@ -7,12 +7,16 @@
 		</event>
 
 		<responses>
-        		<response target="exit()">
-            			<text>Leave me be!</text>
+        		<response condition="EQUALS" value1="$function_test:ResponseAvailable" value2="true" target="exit()">
+            			<text>Should be disabled!</text>
 			</response>
 
-			<response target="exit()">
-    				<text>I seek fortune and glory!</text>
+			<response condition="EQUALS" value1="$function_test:ResponseAvailable" value2="false" target="exit()">
+    				<text>Should be available!</text>
+			</response>
+
+			<response condition="GREATER_THAN" value1="$function_test:CurrentTest" value2="20" target="exit()">
+    				<text>Should be available only if number $function_test:CurrentTest is greater than 20!</text>
 			</response>
 		</responses>
 

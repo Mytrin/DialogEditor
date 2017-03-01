@@ -137,5 +137,12 @@ public class Dialogs {
     public void saveVariableChanges(String filePath){
         variables.saveFile(filePath);
     }
+    
+    /**
+     * Saves all variable changes at variable files.
+     */
+    public void saveAll(){
+        variables.saveAll();
+    }
 
 }
