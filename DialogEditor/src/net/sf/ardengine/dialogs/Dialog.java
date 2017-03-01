@@ -126,30 +126,31 @@ public class Dialog {
         responses.add(newResponse);
     }
 
+    private long getNumberOfAvailableResponses(){
+        return responses.stream().filter((Response t) -> t.isAvailable()).count();
+    }
+    
     /**
-     * If there are no available response, 
+     * If there are no available responses, 
      * NO_RESPONSE will be added to returned stream.
      * @return Available responses for this dialog
      */
     public Stream<Response> getAvailableResponses() {
-        if(responses.size() > 0){
-            return responses.stream();
+        if(getNumberOfAvailableResponses() > 0){
+            return responses.stream().filter((Response t) -> t.isAvailable());
         }
         
         return Stream.of(Response.NO_RESPONSE);
     }
     
     /**
-     * If there are no available response, 
+     * If there are no available responses, 
      * NO_RESPONSE will be added to returned array.
      * @return Array of available responses for this dialog
      */
     public Response[] getAvailableResponsesArray() {
-        if(responses.size() > 0){
-            return responses.toArray(new Response[responses.size()]);
-        }
+        return getAvailableResponses().toArray((int value) -> new Response[value]);
         
-        return new Response[]{Response.NO_RESPONSE};
     }
     
     /**

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<dialog id="step-test2">
+
+		<event source="testificate">
+        		<text>Welcome in Deepfolderholme!</text>
+		</event>
+
+		<responses>
+        		<response target="exit()">
+            			<text>Success!</text>
+			</response>
+		</responses>
+
+	</dialog>
+</root>

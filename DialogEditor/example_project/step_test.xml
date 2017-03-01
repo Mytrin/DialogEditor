@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<dialog id="step-test">
+
+		<event source="testificate">
+        		<text>Are you ready for the journey to deeper folder?</text>
+		</event>
+
+		<responses>
+			<response target="step_test/step_test2:step-test2">
+            			<text>Yay!</text>
+			</response>
+
+        		<response target="exit()">
+            			<text>Nope, no way!</text>
+			</response>
+		</responses>
+
+	</dialog>
+</root>

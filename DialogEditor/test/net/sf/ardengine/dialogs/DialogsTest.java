@@ -13,48 +13,46 @@ public class DialogsTest {
 
     @Test
     public void testBasicLoading() {
-        testedDialogs.loadDialog("simple_test:easy-test");
+        Dialog loadedDialog = testedDialogs.loadDialog("simple_test:easy-test");
         
-        System.out.println(testedDialogs.getActiveDialog().getEvent().getText());
+        TestUtils.printDialog(loadedDialog, 1);
         
         Response[] responses = testedDialogs.getActiveDialog().getAvailableResponsesArray();
-        
-        for(Response r : responses) {
-            System.out.println("R:  "+r.getText());
-        }
-
         assertEquals(responses.length, 2);
-
-        System.out.println("-> "+responses[1].getText());
         
         testedDialogs.selectResponse(responses[1]);
-        
         assertNull(testedDialogs.getActiveDialog());
+    }
+    
+        @Test
+    public void testNextStepLoading() {
+        Dialog loadedDialog = testedDialogs.loadDialog("step_test:step-test");
         
-        System.out.println("----------------------------");
+        TestUtils.printDialog(loadedDialog, 0);
+        
+        Response[] availableResponses = loadedDialog.getAvailableResponsesArray();
+        loadedDialog = testedDialogs.selectResponse(availableResponses[0]);
+        
+        TestUtils.printDialog(loadedDialog, 0);
+        
+        assertNotNull(loadedDialog);
+        
+        availableResponses = loadedDialog.getAvailableResponsesArray();
+        loadedDialog = testedDialogs.selectResponse(availableResponses[0]);
+        
+        assertNull(loadedDialog);
     }
     
     @Test
     public void testBasicVariableLoading() {
-        testedDialogs.loadDialog("simple_test:easy-variable-test");
+        Dialog loadedDialog = testedDialogs.loadDialog("simple_test:easy-variable-test");
+        
+        TestUtils.printDialog(loadedDialog, 0);
+        
         String expectedDialogEventText = testedDialogs.getVariable("Test1").getAsString();
         String dialogEventText = testedDialogs.getActiveDialog().getEvent().getText();
-        
-        System.out.println(dialogEventText);
 
-        Response[] responses = testedDialogs.getActiveDialog().getAvailableResponsesArray();
-        
-        for(Response r : responses) {
-            System.out.println("R:  "+r.getText());
-        }
-
-        System.out.println("-> "+responses[0].getText());
-        
-        testedDialogs.selectResponse(responses[0]);
-        
         assertEquals(expectedDialogEventText, dialogEventText);
-        
-        System.out.println("----------------------------");
     }
-    
+        
 }

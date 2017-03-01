@@ -9,7 +9,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Once I killed an hour trying to figure, why is every test loader hashmap empty...
+ * Once I killed an hour trying to figure, why is every test loader HashMap empty...
+ * Turns out JUnit runs constructor before every test.
  * 
  * @author mytrin
  */
@@ -52,91 +53,87 @@ public class VariableLoaderTest {
     
     @Test
     public void testBasicSaving() {
-        System.out.println("\n---------------------");
-           
-        JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject();
-           
+        JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject(); 
         LoadedVariables variables = new LoadedVariables(null, json);
            
-        System.out.print(gson.toJson(json));
+        String oldJson = gson.toJson(json);
            
         variables.setVariable("cat1.arr1[5]", new JsonPrimitive(Boolean.TRUE));
         
-        System.out.print(" -> "); 
-        System.out.println(gson.toJson(json));
+        String newJson = gson.toJson(json);
            
         assertTrue(variables.getVariable("cat1.arr1[5]").getAsBoolean());
+        
+        printJsonChange(oldJson, newJson);
     }
     
     @Test
     public void test3DArraySave() {
-        System.out.println("\n---------------------");
-        
-        JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject();
-           
+        JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject();           
         LoadedVariables variables = new LoadedVariables(null, json);
            
-        System.out.print(gson.toJson(json));
+        String oldJson = gson.toJson(json);
            
         variables.setVariable("cat1.arr1[5][2][0]", new JsonPrimitive(Boolean.TRUE));
         
-        System.out.print(" -> ");
-        System.out.println(gson.toJson(json));
+        String newJson = gson.toJson(json);
            
         assertTrue(variables.getVariable("cat1.arr1[5][2][0]").getAsBoolean());
+        
+        printJsonChange(oldJson, newJson);
     }
     
     @Test
     public void testNewArraySave() {
-        System.out.println("\n---------------------");
-        
-        JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject();
-           
+        JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject();           
         LoadedVariables variables = new LoadedVariables(null, json);
            
-        System.out.print(gson.toJson(json));
+        String oldJson = gson.toJson(json);
            
         variables.setVariable("cat1.arr2[2]", new JsonPrimitive(Boolean.TRUE));
         
-        System.out.print(" -> "); 
-        System.out.println(gson.toJson(json));
+        String newJson = gson.toJson(json);
            
         assertTrue(variables.getVariable("cat1.arr2[2]").getAsBoolean());
+        
+        printJsonChange(oldJson, newJson);
     }
     
     @Test
     public void testNewObjectSave() {
-        System.out.println("\n---------------------");
-        
         JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject();
-           
         LoadedVariables variables = new LoadedVariables(null, json);
            
-        System.out.print(gson.toJson(json));
+        String oldJson = gson.toJson(json);
            
         variables.setVariable("cat1.subcat1", new JsonPrimitive(Boolean.TRUE));
         
-        System.out.print(" -> ");    
-        System.out.println(gson.toJson(json));
+        String newJson = gson.toJson(json);
            
         assertTrue(variables.getVariable("cat1.subcat1").getAsBoolean());
+        
+        printJsonChange(oldJson, newJson);
     }    
     
     @Test
     public void testNewObjectInArray() {
-        System.out.println("\n---------------------");
-        
         JsonObject json = new JsonParser().parse(basicJSON).getAsJsonObject();
-           
         LoadedVariables variables = new LoadedVariables(null, json);
            
-        System.out.print(gson.toJson(json));
+        String oldJson = gson.toJson(json);
            
         variables.setVariable("cat1.arr1[2].arrcat.subcat1", new JsonPrimitive(Boolean.TRUE));
         
-        System.out.print(" -> ");    
-        System.out.println(gson.toJson(json));
-           
+        String newJson = gson.toJson(json);
+        
         assertTrue(variables.getVariable("cat1.arr1[2].arrcat.subcat1").getAsBoolean());
+        
+        printJsonChange(oldJson, newJson);
     }    
+    
+    private void printJsonChange(String oldJson, String newJson){
+        System.out.println("\n---------------------");
+        
+        System.out.println(oldJson+" -> "+newJson);
+    }
 }
