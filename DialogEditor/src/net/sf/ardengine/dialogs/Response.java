@@ -4,7 +4,7 @@ import net.sf.ardengine.dialogs.functions.FunctionAttributes;
 import org.jdom2.Element;
 
 /**
- *  Represent possible response to current dialog event.
+ *  Represents possible response to current dialog event.
  * 
  *  Tag: response
  *   Compulsory “target”   - ID of next dialog with path, 
@@ -35,9 +35,9 @@ public class Response {
     /**Name of tag containing text of response/event*/
     public static final String TAG_TEXT="text";
     
-    /**Attribute name of target*/
+    /**Attribute containing name of target*/
     private static final String ATTR_TARGET="target";
-    /**Attribute name of function*/
+    /**Attribute containing name of function*/
     private static final String ATTR_CONDITION="condition";
     
     

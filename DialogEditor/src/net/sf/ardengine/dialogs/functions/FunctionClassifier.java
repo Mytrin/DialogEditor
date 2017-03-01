@@ -22,7 +22,7 @@ public class FunctionClassifier {
         loadedFunctions.put(GreaterFunction.NAME, new GreaterFunction());
         loadedFunctions.put(LowerFunction.NAME, new LowerFunction());
         //Variable manipulation
-        
+        loadedFunctions.put(VariableSaveFunction.NAME, new VariableSaveFunction());
     }
 
     /**

@@ -13,7 +13,7 @@ public class VariableTranslator {
     /**Stored JSON variable documents*/
     private final VariableLoader loader;
     /**Looks for $variableName*/
-    private static final Pattern VAR_PATTERN = Pattern.compile("(\\$)([A-Za-z:._\\-0-9]*)");
+    private static final Pattern VAR_PATTERN = Pattern.compile("(\\$)([A-Za-z0-9]+[A-Za-z:._\\-0-9]+)");
     
     private static final String VAR_START_REGEX = "\\$";
 

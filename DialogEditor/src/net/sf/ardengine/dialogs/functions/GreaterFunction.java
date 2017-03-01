@@ -12,7 +12,7 @@ import net.sf.ardengine.dialogs.variables.VariableTranslator;
  *  value2 - any value
  * Optional:
  *  negate - "true"/"false"
- *  target - variablePath - saves answer to given variable
+ *  taget-var - variablePath - saves answer to given variable
  */
 public class GreaterFunction extends ACompareFunction{
     

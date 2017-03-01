@@ -21,4 +21,19 @@
 		</responses>
 
 	</dialog>
+
+	<dialog id="execute-test">
+
+		<event source="testificate">
+        		<text>Saving $function_test:CurrentTest to global $ ExecuteTest.</text>
+			<execute function="VARIABLE_SAVE" target-var="ExecuteTest" value="$function_test:CurrentTest" />
+		</event>
+
+		<responses>
+			<response target="exit()">
+    				<text>Done.</text>
+			</response>
+		</responses>
+
+	</dialog>
 </root>

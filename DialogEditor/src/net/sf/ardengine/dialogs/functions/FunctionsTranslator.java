@@ -2,6 +2,7 @@ package net.sf.ardengine.dialogs.functions;
 
 import java.util.List;
 import net.sf.ardengine.dialogs.Dialog;
+import net.sf.ardengine.dialogs.Execute;
 import net.sf.ardengine.dialogs.Response;
 import net.sf.ardengine.dialogs.variables.VariableLoader;
 import net.sf.ardengine.dialogs.variables.VariableTranslator;
@@ -34,27 +35,30 @@ public class FunctionsTranslator {
      * @param dialog Dialog without executed execute elements and disabled responses
      */
     public void process(Dialog dialog){
-        //TODO execute elements first!
+        dialog.getEvent().getAllExecutes().forEach((Execute t) -> {
+            executeFunction(t.getFunctionAttributes());
+        });
         
         dialog.getAvailableResponses().forEach((Response t) -> {
-            
-           FunctionAttributes functionAttributes = t.getFunctionAttributes();
-           String functionName = functionAttributes.getFunctionName();
+            Object answer = executeFunction(t.getFunctionAttributes());
            
-           if(functionName != null){
-               IFunction function = functions.getFunction(functionName);
-               
-               if(function != null){
-                   function.execute(loader, translator, functionAttributes);
-                   
-                   Object answer = function.getAnswer();
-                   
-                   if(answer instanceof Boolean){
-                       t.setAvailable((Boolean)answer);
-                   }
-               }
-           }
+            if(answer instanceof Boolean){
+                t.setAvailable((Boolean)answer);
+            }
         });
+    }
+    
+    private Object executeFunction(FunctionAttributes functionAttributes){
+        String functionName = functionAttributes.getFunctionName();
+        
+        if(functionName != null){
+            IFunction function = functions.getFunction(functionName);
+                function.execute(loader, translator, functionAttributes);
+                
+                return function.getAnswer();
+        }else{
+            return null;
+        }
     }
     
     /**

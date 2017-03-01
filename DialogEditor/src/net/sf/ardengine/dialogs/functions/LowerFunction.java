@@ -13,7 +13,7 @@ import org.jdom2.Element;
  *  value2 - any value
  * Optional:
  *  negate - "true"/"false"
- *  target - variablePath - saves answer to given variable
+ *  taget-var - variablePath - saves answer to given variable
  */
 public class LowerFunction extends ACompareFunction{
     

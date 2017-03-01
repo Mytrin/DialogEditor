@@ -15,7 +15,7 @@ public interface IFunction<T> {
     public static final String VALUE_FALSE = "false";
     
     /**Optional argument names*/
-    public static final String ATTR_TARGET = "taget-var";
+    public static final String ATTR_TARGET = "target-var";
     
     /**
      * @return Name of this function, must be unique, otherwise it covers original

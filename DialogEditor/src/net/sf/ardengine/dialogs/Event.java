@@ -1,5 +1,8 @@
 package net.sf.ardengine.dialogs;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
 import org.jdom2.Element;
 
 /**
@@ -8,7 +11,13 @@ import org.jdom2.Element;
  * Tag: event
  *  Compulsory “source” - author of event(speaker)
  * 
- * Inner tag: text  -   contains text representing this response
+ * Inner tag: 
+ *  Compulsory:
+ *      text  -   contains text representing this response
+ *  Optional:
+ *      execute - executes given function
+ * 
+ * 
  */
 public class Event {
     /**Name of tag symbolizing event*/
@@ -18,14 +27,16 @@ public class Event {
     
     /**Attribute name of target*/
     private static final String ATTR_SOURCE="source";
-    
-    
+
     /**Text rendered as this event without translated variables*/
     private String rawText;
     /**Text rendered as this event*/
     private String translatedText;
     /**Speaker of the text*/
     private String sourceID;
+    
+    /**Functions to execute after getting to this dialog*/
+    private final List<Execute> executes = new LinkedList<>();
     
     /**
      * @param rawText Text rendered as this event
@@ -43,6 +54,12 @@ public class Event {
     public Event(Element eventElement) {
         this.rawText = eventElement.getChild(TAG_TEXT).getText();
         this.sourceID = eventElement.getAttributeValue(ATTR_SOURCE);
+        
+        //Load all executes for this event
+        for(Element executeElement : 
+                eventElement.getChildren(Execute.TAG_EXECUTE) ){
+            executes.add(new Execute(executeElement));
+        }
     }
 
     /**
@@ -55,6 +72,10 @@ public class Event {
         Element event = new Element(TAG_EVENT);
             event.getChildren().add(textTag);
             event.setAttribute(ATTR_SOURCE, sourceID);
+            
+        for(Execute execute: executes){
+            event.getChildren().add(execute.createElement());
+        }
             
         return event;
     }
@@ -93,5 +114,12 @@ public class Event {
 
     public void setSourceID(String sourceID) {
         this.sourceID = sourceID;
+    }
+    
+    /**
+     * @return All functions, which should execute with this dialog
+     */
+    public Stream<Execute> getAllExecutes(){
+        return executes.stream();
     }
 }

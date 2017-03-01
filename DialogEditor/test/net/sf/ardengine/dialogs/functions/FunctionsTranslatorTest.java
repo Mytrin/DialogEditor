@@ -37,4 +37,16 @@ public class FunctionsTranslatorTest {
         dialogs.saveVariableChanges("function_test");
     }
     
+    @Test
+    public void testExecutes() {
+        Dialog dialog = dialogs.loadDialog("function_test:execute-test");
+        TestUtils.printDialog(dialog, 1);
+
+        int nextTestCount = dialogs.getVariable("function_test:CurrentTest").getAsInt();
+        int savedTestCount = dialogs.getVariable("ExecuteTest").getAsInt();
+        
+        assertEquals(nextTestCount, savedTestCount);
+        dialogs.saveAll();
+    }
+    
 }
