@@ -18,7 +18,7 @@ public class FunctionsTranslator {
     /**Stored fro variable translation*/
     private final VariableTranslator translator;
     /**Stored available functions*/
-    private final FunctionClassifier functions = new FunctionClassifier();
+    private final FunctionMapper functions = new FunctionMapper();
     
     /**
      * @param loader Object responsible for saving of variables

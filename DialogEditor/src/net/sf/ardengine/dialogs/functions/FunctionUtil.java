@@ -40,19 +40,15 @@ public class FunctionUtil {
         
         Number parsedNumber = null;
         try{
-            if(attrValue.contains(NUMBER_PATTERN)){
-                parsedNumber = Double.parseDouble(attrValue);
-            }else{
-                parsedNumber = Integer.parseInt(attrValue);
-            }
+            parsedNumber = convertStringToNumber(attrValue);
         }catch(Exception e){
             Logger.getLogger(FunctionUtil.class.getName()).log(Level.WARNING, 
-                    "Failed to translate {0} as number!", attrValue);
+                    "Failed to translate {0} as number!", attrName);
         }
         
         return parsedNumber;
     }
-    
+
     /**
      * If value cannot be parsed, returns false!
      * @param translator Available variables
@@ -64,6 +60,20 @@ public class FunctionUtil {
          String attrValue =  translateAttributeAsString(translator, attributes, attrName);
          
          return (attrValue != null && attrValue.trim().toLowerCase().equals(IFunction.VALUE_TRUE));
+    }
+    
+    /**
+     * 
+     * @param number String to be converted to number
+     * @return Number value or null if parsing fails.
+     * @throws java.lang.Exception When given String is null or not number
+     */
+    public static Number convertStringToNumber(String number) throws Exception{
+        if(number.contains(NUMBER_PATTERN)){
+                return Double.parseDouble(number);
+        }else{
+                return Integer.parseInt(number);
+        }
     }
 
 }

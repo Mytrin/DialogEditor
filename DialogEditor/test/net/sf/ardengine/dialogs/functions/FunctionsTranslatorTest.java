@@ -49,4 +49,16 @@ public class FunctionsTranslatorTest {
         dialogs.saveAll();
     }
     
+    @Test
+    public void testVariableEditFunction() {
+        //Every test at this dialog is value of $CurrentTest added to itself
+        Dialog dialog = dialogs.loadDialog("function_test:variable-edit-test");
+        TestUtils.printDialog(dialog, 1);
+
+        int executeTestCount = dialogs.getVariable("ExecuteTest").getAsInt();
+
+        assertTrue(executeTestCount%2 == 0);
+        dialogs.saveAll();
+    }
+    
 }

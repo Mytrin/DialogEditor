@@ -36,4 +36,20 @@
 		</responses>
 
 	</dialog>
+
+	<dialog id="variable-edit-test">
+
+		<event source="testificate">
+        		<text>Incrementing  $ ExecuteTest to itself.</text>
+			<execute function="NUMBER_EDIT" target-var="ExecuteTest" value="+1" />
+			<execute function="NUMBER_EDIT" target-var="ExecuteTest" value="+$ExecuteTest" />
+		</event>
+
+		<responses>
+			<response target="exit()">
+    				<text>Done...</text>
+			</response>
+		</responses>
+
+	</dialog>
 </root>

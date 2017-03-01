@@ -51,7 +51,5 @@ public class VariableSaveFunction implements IFunction<String>{
     public String[] getOptionalArgsNames() {
         return OPTIONAL_ARGS;
     }
-    
-    
-    
+
 }

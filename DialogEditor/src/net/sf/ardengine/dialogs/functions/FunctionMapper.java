@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 /**
  * Contains a HashMap of loaded function instances.
  */
-public class FunctionClassifier {
+public class FunctionMapper {
     
     /** Loaded functions, the key is their name */
     private final HashMap<String, IFunction> loadedFunctions = new HashMap<>();
@@ -16,13 +16,14 @@ public class FunctionClassifier {
     /**
      * Loads default functions
      */
-    protected FunctionClassifier() {
+    protected FunctionMapper() {
         //Variable comparation
         loadedFunctions.put(EqualsFunction.NAME, new EqualsFunction());
         loadedFunctions.put(GreaterFunction.NAME, new GreaterFunction());
         loadedFunctions.put(LowerFunction.NAME, new LowerFunction());
         //Variable manipulation
         loadedFunctions.put(VariableSaveFunction.NAME, new VariableSaveFunction());
+        loadedFunctions.put(NumberEditFunction.NAME, new NumberEditFunction());
     }
 
     /**
@@ -33,7 +34,7 @@ public class FunctionClassifier {
         IFunction foundFunction = loadedFunctions.get(functionName);
         
         if(foundFunction == null){
-            Logger.getLogger(FunctionClassifier.class.getName()).log(
+            Logger.getLogger(FunctionMapper.class.getName()).log(
                            Level.WARNING, "Called function {0} not found!", functionName);
         }
         
