@@ -2,7 +2,6 @@ package net.sf.ardengine.dialogs.functions;
 
 import net.sf.ardengine.dialogs.variables.VariableLoader;
 import net.sf.ardengine.dialogs.variables.VariableTranslator;
-import org.jdom2.Element;
 
 /**
  * Compares if both arguments are equal.

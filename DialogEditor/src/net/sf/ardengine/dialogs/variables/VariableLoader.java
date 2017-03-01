@@ -102,10 +102,9 @@ public class VariableLoader extends AResourceLoader<LoadedVariables>{
     }
     
     @Override
-    public void saveFile(String filePath){
-        File targetFile = new File(filePath);
-        
+    public void saveFile(String filePath){       
         LoadedVariables variables = loadedDocuments.get(filePath);
+        File targetFile = variables.jsonFile;
         
         if(variables == null){
             throw new DialogEditorException(filePath+" is not loaded!");

@@ -1,9 +1,6 @@
 package net.sf.ardengine.dialogs.functions;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sf.ardengine.dialogs.Dialog;
 import net.sf.ardengine.dialogs.Response;
 import net.sf.ardengine.dialogs.variables.VariableLoader;

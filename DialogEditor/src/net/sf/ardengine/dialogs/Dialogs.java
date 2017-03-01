@@ -129,5 +129,13 @@ public class Dialogs {
     public void setVariable(String completePath, JsonPrimitive newValue){
         variables.setVariable(completePath, newValue);
     }
+    
+    /**
+     * Saves variable changes at selected file.
+     * @param filePath path to variable file without suffix (Path/to/fileName:object.varName)
+     */
+    public void saveVariableChanges(String filePath){
+        variables.saveFile(filePath);
+    }
 
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<dialog id="function-test">
+
+		<event source="testificate">
+        		<text>Running this test for $function_test:CurrentTest time.</text>
+		</event>
+
+		<responses>
+        		<response target="exit()">
+            			<text>Leave me be!</text>
+			</response>
+
+			<response target="exit()">
+    				<text>I seek fortune and glory!</text>
+			</response>
+		</responses>
+
+	</dialog>
+</root>

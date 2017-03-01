@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.stream.JsonWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -66,8 +67,8 @@ public class LoadedVariables {
     * @param target File to create or overwrite
     */    
     public void save(Gson builder, File target){
-        try{
-            builder.toJson(json, new FileWriter(target));
+        try(FileWriter writer = new FileWriter(target)) {
+            builder.toJson(json, new JsonWriter(writer));
         }catch(IOException | JsonIOException e){
             throw new DialogEditorException("Failed to save variable file: ", e);
         }
