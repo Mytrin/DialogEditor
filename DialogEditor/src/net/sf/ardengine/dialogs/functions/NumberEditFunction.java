@@ -69,7 +69,7 @@ public class NumberEditFunction implements IFunction<Number>{
     }
     
     private boolean isInteger(double number){
-       return  number - Math.floor(number) < TOLERANCE;
+       return  Math.abs( number - Math.floor(number) ) < TOLERANCE;
     }
     
     private Double calculate(Double a, Double b, char operation){
