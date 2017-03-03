@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -23,6 +24,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
@@ -34,8 +36,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.sf.ardengine.dialogs.Dialog;
 import net.sf.ardengine.dialogs.Event;
+import net.sf.ardengine.dialogs.Execute;
 import net.sf.ardengine.dialogs.Response;
 import net.sf.ardengine.dialogs.cache.LoadedDocument;
+import net.sf.ardengine.dialogs.functions.FunctionMapper;
+import net.sf.ardengine.dialogs.functions.IFunction;
+import net.sf.ardengine.dialogs.functions.VariableSaveFunction;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -55,7 +61,9 @@ public class FXMLmainController implements Initializable {
     @FXML
     AnchorPane ap;
     @FXML
-    TextField tfTokenRemember, tfCondition;
+    ScrollPane spAttributes;
+    @FXML
+    TextField tfCondition;
     @FXML
     CheckBox cbTokenRemember;
     @FXML
@@ -187,8 +195,9 @@ public class FXMLmainController implements Initializable {
     public void newFile() {
         fileName = dialogWindow("Zadejte název souboru: "); //TODO cesta
         lFile.setText(fileName+".xml");
-        document = new LoadedDocument(new File(projectFolder + "\\" +fileName), new Document(new Element("root")));
+        document = new LoadedDocument(new File(projectFolder + "\\" +fileName + ".xml"), new Document(new Element("root")));
         filePath = document.source.getAbsolutePath();
+        filePath=filePath.substring(0, filePath.length()-4);
         fillTargets();
         refreshDialogs();
         refreshAnswers();
@@ -248,6 +257,10 @@ public class FXMLmainController implements Initializable {
 
         if (cbTokenRemember.isSelected()) {
             //TODO exeCute pro zapamatování
+        //Execute execute = new Execute(VariableSaveFunction.NAME);
+        //execute.getFunctionAttributes().setAttribute(IFunction.ATTR_TARGET, filePath.replace(projectFolder + "//", "responses:").replace("/", "."));
+            //
+    
         }
         actualResponse.setTarget(target);
         document.addOrRefreshDialog(actualDialog);
@@ -263,16 +276,11 @@ public class FXMLmainController implements Initializable {
         //condition = "";
         target = "exit()";
         cbTokenRemember.setSelected(false);
-        tfTokenRemember.setDisable(true);
         actualDialog.addResponse(actualResponse);
         refreshAnswers();
         refreshAns();
     }
 
-    public void checkBox() {
-        boolean bool = cbTokenRemember.isSelected();
-        tfTokenRemember.setDisable(!bool);
-    }
 
     public void editAnswer() {
         actualResponse = lvAnswers.getSelectionModel().getSelectedItem();

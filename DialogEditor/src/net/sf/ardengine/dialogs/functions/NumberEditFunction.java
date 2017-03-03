@@ -17,7 +17,7 @@ import net.sf.ardengine.dialogs.variables.VariableTranslator;
  * 
  * Name: "NUMBER_EDIT"
  * Compulsory:
- *  value - any value
+ *  value - number value or variable name with +-/*
  *  taget-var - variablePath - saves answer to given variable
  */
 public class NumberEditFunction implements IFunction<Number>{

@@ -17,7 +17,7 @@ public class VariableSaveFunction implements IFunction<String>{
     /**Function unique name*/
     public static final String NAME = "VARIABLE_SAVE";
     
-    private static final String ATTR_VALUE = "value";
+    public static final String ATTR_VALUE = "value";
 
     private static final String[] COMPULSORY_ARGS = new String[]{IFunction.ATTR_TARGET, ATTR_VALUE};
     private static final String[] OPTIONAL_ARGS = new String[]{};

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+<!-- IMPLICITLY SUPPORTED FUNCTIONS FOR EDITOR -->
+<!-- SERIOUSLY, DO NOT EDIT THIS PART, HERE BE DRAGONS! -->
+	<function name="EQUALS">
+		<description>Compares if both arguments are equal.</description>
+
+		<compulsory>
+			<argument name="value1">
+				<description>1. compared value</description>
+			</argument>
+			<argument name="value2">
+				<description>2. compared value</description>
+			</argument>
+		</compulsory>
+
+		<optional>
+			<argument name="negate">
+				<description>Should be function answer negated (true/false)?</description>
+			</argument>
+			<argument name="target-var">
+				<description>In which variable should be function answer saved?</description>
+			</argument>
+		</optional>
+	</function>
+
+	<function name="GREATER_THAN">
+		<description>Compares if first argument is greater than second.</description>
+
+		<compulsory>
+			<argument name="value1">
+				<description>1. compared value</description>
+			</argument>
+			<argument name="value2">
+				<description>2. compared value</description>
+			</argument>
+		</compulsory>
+
+		<optional>
+			<argument name="negate">
+				<description>Should be function answer negated (true/false)?</description>
+			</argument>
+			<argument name="target-var">
+				<description>In which variable should be function answer saved?</description>
+			</argument>
+		</optional>
+	</function>
+
+	<function name="LOWER_THAN">
+		<description>Compares if first argument is lower than second.</description>
+
+		<compulsory>
+			<argument name="value1">
+				<description>1. compared value</description>
+			</argument>
+			<argument name="value2">
+				<description>2. compared value</description>
+			</argument>
+		</compulsory>
+
+		<optional>
+			<argument name="negate">
+				<description>Should be function answer negated (true/false)?</description>
+			</argument>
+			<argument name="target-var">
+				<description>In which variable should be function answer saved?</description>
+			</argument>
+		</optional>
+	</function>
+
+	<function name="VARIABLE_SAVE">
+		<description>Writes given value to target variable.</description>
+
+		<compulsory>
+			<argument name="value">
+				<description>Variable or any other value</description>
+			</argument>
+			<argument name="target-var">
+				<description>In which variable should be function answer saved?</description>
+			</argument>
+		</compulsory>
+
+		<optional>
+		</optional>
+	</function>
+
+	<function name="NUMBER_EDIT">
+		<description> 
+Writes given value to target variable.
+SUPPORTS NUMBER ONLY!
+
+Value syntax examples:   
+	"+5" //Adds 5 to current value
+	"-$MwH" //Removes number value of global variable MwH
+	"*1" //Multiplies by 1
+	"/0.5" //Divides by 0.5
+		</description>
+
+		<compulsory>
+			<argument name="value">
+				<description>Variable or any other value</description>
+			</argument>
+			<argument name="target-var">
+				<description>In which variable should be function answer saved?</description>
+			</argument>
+		</compulsory>
+
+		<optional>
+		</optional>
+	</function>
+<!-- IMPLICITLY SUPPORTED FUNCTIONS FOR EDITOR -->
+<!-- YOUR SUPPORTED FUNCTIONS, USE UNIQUE FUNCTION NAMES -->
+<!--
+<function name="MY_AWESOME_FUNCTION">
+		<description>Text displayed in editor</description>
+
+		<compulsory>
+			<argument name="argumentName">
+				<description>What do you expect as value?</description>
+			</argument>
+		</compulsory>
+
+		<optional>
+		</optional>
+	</function>
+-->
+<!-- YOUR SUPPORTED FUNCTIONS -->
+</root>

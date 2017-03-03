@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * Contains a HashMap of loaded function instances.
@@ -58,8 +59,15 @@ public class FunctionMapper {
      * @param functions user's functions to be added
      */
     protected void addAllFunctions(List<IFunction> functions){
-        for(IFunction function: functions){
+        functions.forEach((function) -> {
             addFunction(function);
-        }
+        });
+    }
+    
+    /**
+     * @return Stream of all loaded function names
+     */
+    public Stream<String> getAllFunctionNames(){
+        return loadedFunctions.keySet().stream();
     }
 }
