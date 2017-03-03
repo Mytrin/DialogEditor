@@ -7,7 +7,7 @@ import net.sf.ardengine.dialogs.variables.VariableLoader;
 import net.sf.ardengine.dialogs.variables.VariableTranslator;
 
 /**
- * Writes given value to target variable
+ * Changes target number variable.
  * SUPPORTS NUMBER ONLY!
  *
  * Value syntax examples:   "+5" //Adds 5 to current value

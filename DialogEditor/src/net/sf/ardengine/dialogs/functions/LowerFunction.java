@@ -2,12 +2,11 @@ package net.sf.ardengine.dialogs.functions;
 
 import net.sf.ardengine.dialogs.variables.VariableLoader;
 import net.sf.ardengine.dialogs.variables.VariableTranslator;
-import org.jdom2.Element;
 
 /**
  * Compares if first argument is lower than second.
  *     
- * Name: "GREATER_THAN"
+ * Name: "LOWER_THAN"
  * Compulsory:
  *  value1 - any value
  *  value2 - any value
