@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -36,12 +35,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.sf.ardengine.dialogs.Dialog;
 import net.sf.ardengine.dialogs.Event;
-import net.sf.ardengine.dialogs.Execute;
 import net.sf.ardengine.dialogs.Response;
 import net.sf.ardengine.dialogs.cache.LoadedDocument;
-import net.sf.ardengine.dialogs.functions.FunctionMapper;
-import net.sf.ardengine.dialogs.functions.IFunction;
-import net.sf.ardengine.dialogs.functions.VariableSaveFunction;
+import net.sf.ardengine.dialogs.functions.FunctionAttributes;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -63,7 +59,7 @@ public class FXMLmainController implements Initializable {
     @FXML
     ScrollPane spAttributes;
     @FXML
-    TextField tfCondition;
+    TextField tfConditionL, tfConditionR;
     @FXML
     CheckBox cbTokenRemember;
     @FXML
@@ -83,24 +79,29 @@ public class FXMLmainController implements Initializable {
     @FXML
     Pane pAnswer;
     LoadedDocument document;
+    Document configXML;
     Dialog actualDialog;
     Response actualResponse;
     String fileName, target, projectFolder, filePath;
     ObservableList<Dialog> dialogs;
     ObservableList<Response> answers;
-     SAXBuilder jdomBuilder;
+    SAXBuilder jdomBuilder;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        ObservableList<String> anoNe = FXCollections.observableArrayList();
-        anoNe.add("Ano");
-        anoNe.add("Ne");
-        chbCondition.setItems(anoNe);
-        chbCondition.getSelectionModel().selectFirst();  
+        ObservableList<Condition> list = FXCollections.observableArrayList();
+        list.add(new Condition("Žádná", "", false));
+        list.add(new Condition("==", "EQUALS", false));
+        list.add(new Condition("!=", "EQUALS", true));
+        list.add(new Condition(">", "GREATER_THAN", false));
+        list.add(new Condition("<", "LOWER_THAN", false));
+        list.add(new Condition(">=", "LOWER_THAN", true));
+        list.add(new Condition("<=", "GREATER_THAN", true));
+        chbCondition.setItems(list);
+        chbCondition.getSelectionModel().selectFirst();
         jdomBuilder = new SAXBuilder();
     }
 
-    
     private void refreshDialogs() {
         dialogs = FXCollections.observableArrayList();
         document.getAllDialogs().forEach((dialog) -> {
@@ -143,6 +144,43 @@ public class FXMLmainController implements Initializable {
             } else {
                 chbCondition.setDisable(true);
             }*/
+            FunctionAttributes attrs = actualResponse.getFunctionAttributes();
+            tfConditionL.setText(attrs.getAttributeValue("value1"));
+            tfConditionR.setText(attrs.getAttributeValue("value2"));
+            if (attrs.getAttributeValue(Response.ATTR_CONDITION) != null) {
+                switch (attrs.getAttributeValue(Response.ATTR_CONDITION)) {
+                    case "EQUALS":
+                        if (attrs.getAttributeValue("negate").equals("true")) {
+                            chbCondition.getSelectionModel().select(2);
+                        } else {
+                            chbCondition.getSelectionModel().select(1);
+                        }
+                        break;
+                    case "GREATER_THAN":
+                        if (attrs.getAttributeValue("negate").equals("true")) {
+                            chbCondition.getSelectionModel().select(6);
+                        } else {
+                            chbCondition.getSelectionModel().select(3);
+                        }
+                        break;
+                    case "LOWER_THAN":
+                        if (attrs.getAttributeValue("negate").equals("true")) {
+                            chbCondition.getSelectionModel().select(5);
+                        } else {
+                            chbCondition.getSelectionModel().select(4);
+                        }
+                        break;
+                    default:
+                        chbCondition.getSelectionModel().select(0);
+                        tfConditionL.setText("");
+                        tfConditionR.setText("");
+                        break;
+                }
+            }else{
+             chbCondition.getSelectionModel().select(0);
+                        tfConditionL.setText("");
+                        tfConditionR.setText("");
+            }
             target = actualResponse.getTarget();
             mbTarget.setText(target);
         }
@@ -168,6 +206,13 @@ public class FXMLmainController implements Initializable {
         projectFolder = (chooser.showDialog((Stage) (ap.getScene().getWindow()))).getAbsolutePath();
         tabDialogs.setDisable(false);
         tabFile.setDisable(false);
+        File configFile = new File(projectFolder + "\\.configuration\\functions.xml");
+        try {
+            configXML = jdomBuilder.build(configFile);
+        } catch (JDOMException | IOException ex) {
+            Logger.getLogger(FXMLmainController.class.getName()).log(Level.SEVERE, null, ex);
+            //throw some cool exception
+        }
     }
 
     public void openFile() {
@@ -194,10 +239,10 @@ public class FXMLmainController implements Initializable {
 
     public void newFile() {
         fileName = dialogWindow("Zadejte název souboru: "); //TODO cesta
-        lFile.setText(fileName+".xml");
-        document = new LoadedDocument(new File(projectFolder + "\\" +fileName + ".xml"), new Document(new Element("root")));
+        lFile.setText(fileName + ".xml");
+        document = new LoadedDocument(new File(projectFolder + "\\" + fileName + ".xml"), new Document(new Element("root")));
         filePath = document.source.getAbsolutePath();
-        filePath=filePath.substring(0, filePath.length()-4);
+        filePath = filePath.substring(0, filePath.length() - 4);
         fillTargets();
         refreshDialogs();
         refreshAnswers();
@@ -221,7 +266,7 @@ public class FXMLmainController implements Initializable {
         actualDialog = new Dialog(id, new Event("", "Undefined"), new ArrayList<>());
         tabChosenDialog.setDisable(false);
         document.addOrRefreshDialog(actualDialog);
-        tp2.getSelectionModel().select(2);
+        //   tp2.getSelectionModel().select(2);
         refreshDialogs();
         refreshAnswers();
         refreshAns();
@@ -255,13 +300,23 @@ public class FXMLmainController implements Initializable {
     public void saveAnswer() { //saveResponse
         actualResponse.setRawText(taAnswer.getText());
 
-        if (cbTokenRemember.isSelected()) {
-            //TODO exeCute pro zapamatování
+        //not gonna work anymore..
+        /* if (cbTokenRemember.isSelected()) {
+        //TODO exeCute pro zapamatování
         //Execute execute = new Execute(VariableSaveFunction.NAME);
         //execute.getFunctionAttributes().setAttribute(IFunction.ATTR_TARGET, filePath.replace(projectFolder + "//", "responses:").replace("/", "."));
-            //
-    
+        }*/
+        FunctionAttributes attrs = actualResponse.getFunctionAttributes();
+        if (!chbCondition.getSelectionModel().isSelected(0)) {
+            Condition selected = (Condition) chbCondition.getSelectionModel().getSelectedItem();
+            attrs.setAttribute(Response.ATTR_CONDITION, selected.functionName);
+            attrs.setAttribute("value1", tfConditionL.getText());
+            attrs.setAttribute("value2", tfConditionR.getText());
+            attrs.setAttribute("negate", selected.negate ? "true" : "false");
+        } else if (attrs.getAttributeValue(Response.ATTR_CONDITION) != null) {
+            attrs.setAttribute(Response.ATTR_CONDITION, "");
         }
+
         actualResponse.setTarget(target);
         document.addOrRefreshDialog(actualDialog);
         refreshAnswers();
@@ -271,16 +326,17 @@ public class FXMLmainController implements Initializable {
     public void newAnswer() { //newResponse
 
         actualResponse = new Response("...");
-        mbCondition.setText("žádná");
+        //   mbCondition.setText("žádná");
         mbTarget.setText("Konec");
-        //condition = "";
+        chbCondition.getSelectionModel().selectFirst();
+        tfConditionL.setText("");
+        tfConditionR.setText("");
         target = "exit()";
-        cbTokenRemember.setSelected(false);
+        //cbTokenRemember.setSelected(false);
         actualDialog.addResponse(actualResponse);
         refreshAnswers();
         refreshAns();
     }
-
 
     public void editAnswer() {
         actualResponse = lvAnswers.getSelectionModel().getSelectedItem();
@@ -295,12 +351,14 @@ public class FXMLmainController implements Initializable {
     }
 
     public void fillTokens() { //bude překopáno s příchodem podmínek
-        mbCondition.getItems().get(0).setOnAction((ActionEvent t) -> {
+        /*   mbCondition.getItems().get(0).setOnAction((ActionEvent t) -> {
             mbCondition.setText("žádná");
             // condition = "";
             chbCondition.setDisable(true);
         });
-        /*   Menu m = (Menu) mbCondition.getItems().get(1);
+         */
+
+ /*   Menu m = (Menu) mbCondition.getItems().get(1);
         m.getItems().clear();
         if (answerstokens == null) {
             answerstokens = IO.getAnswerTokens(new File("answers"));
@@ -315,7 +373,6 @@ public class FXMLmainController implements Initializable {
             m.getItems().add(item);
         });
          */
-
     }
 
     public void fillTargets() {
@@ -339,6 +396,7 @@ public class FXMLmainController implements Initializable {
                 item.setOnAction((ActionEvent t) -> {
                     mbTarget.setText(id);
                     target = filePath.replace(projectFolder + "\\", "");
+                    target = target.replace(".xml", ":" + id);
                 });
                 newFileMenu.getItems().add(item);
             });
@@ -356,6 +414,7 @@ public class FXMLmainController implements Initializable {
         item.setOnAction((ActionEvent t) -> {
             mbTarget.setText(id);
             target = filePath.replace(projectFolder + "\\", "");
+            target = target.replace(".xml", ":" + id);
         });
         ((Menu) mbTarget.getItems().get(1)).getItems().forEach((MenuItem subMenu) -> {
             if (subMenu.getText().equals(filePath)) {
@@ -379,5 +438,23 @@ public class FXMLmainController implements Initializable {
                 });
             }
         });
+    }
+
+    private class Condition {
+
+        String label, functionName;
+        boolean negate;
+
+        Condition(String label, String name, boolean negate) {
+            this.functionName = name;
+            this.label = label;
+            this.negate = negate;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+
     }
 }

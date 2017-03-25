@@ -38,7 +38,7 @@ public class Response {
     /**Attribute containing name of target*/
     private static final String ATTR_TARGET="target";
     /**Attribute containing name of function*/
-    private static final String ATTR_CONDITION="condition";
+    public static final String ATTR_CONDITION="condition";
     
     
     /**Text rendered as this event without translated variables*/
