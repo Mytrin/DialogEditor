@@ -219,8 +219,9 @@ public class FXMLmainController implements Initializable {
         projectFolder = (chooser.showDialog((Stage) (ap.getScene().getWindow()))).getAbsolutePath();
         tabDialogs.setDisable(false);
         tabFile.setDisable(false);
-        File configFile = new File(projectFolder + "\\.configuration\\functions.xml");
-        File sourcesFile = new File(projectFolder + "\\.configuration\\sources.xml");
+        System.out.println(projectFolder);
+        File configFile = new File(projectFolder + File.separator+".configuration"+File.separator+"functions.xml");
+        File sourcesFile = new File(projectFolder + File.separator +".configuration"+File.separator+"sources.xml");
         Document sourcesXML;
         try {
             configXML = jdomBuilder.build(configFile);
@@ -271,7 +272,7 @@ public class FXMLmainController implements Initializable {
         refreshAnswers();
         refreshAns();
         filePath = file.getAbsolutePath();
-        fileName = file.getAbsolutePath().replace(directory.getAbsolutePath() + "\\", "");
+        fileName = file.getAbsolutePath().replace(directory.getAbsolutePath() + File.separator, "");
         lFile.setText(fileName);
         fillTargets();
         tp1.getSelectionModel().select(2);
@@ -280,7 +281,7 @@ public class FXMLmainController implements Initializable {
     public void newFile() {
         fileName = dialogWindow("Zadejte název souboru: "); //TODO cesta
         lFile.setText(fileName + ".xml");
-        document = new LoadedDocument(new File(projectFolder + "\\" + fileName + ".xml"), new Document(new Element("root")));
+        document = new LoadedDocument(new File(projectFolder + File.separator + fileName + ".xml"), new Document(new Element("root")));
         filePath = document.source.getAbsolutePath();
         filePath = filePath.substring(0, filePath.length() - 4);
         fillTargets();
@@ -417,7 +418,7 @@ public class FXMLmainController implements Initializable {
                 MenuItem item = new MenuItem(id);
                 item.setOnAction((ActionEvent t) -> {
                     mbTarget.setText(id);
-                    target = filePath.replace(projectFolder + "\\", "");
+                    target = filePath.replace(projectFolder + File.separator, "");
                     target = target.replace(".xml", ":" + id);
                 });
                 newFileMenu.getItems().add(item);
@@ -435,7 +436,7 @@ public class FXMLmainController implements Initializable {
         MenuItem item = new MenuItem(id);
         item.setOnAction((ActionEvent t) -> {
             mbTarget.setText(id);
-            target = filePath.replace(projectFolder + "\\", "");
+            target = filePath.replace(projectFolder + File.separator, "");
             target = target.replace(".xml", ":" + id);
         });
         ((Menu) mbTarget.getItems().get(1)).getItems().forEach((MenuItem subMenu) -> {
