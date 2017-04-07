@@ -11,14 +11,13 @@
    <children>
       <Pane layoutY="-8.0" prefHeight="600.0" prefWidth="800.0">
          <children>
-            <TabPane layoutY="8.0" prefHeight="592.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tp1" layoutY="8.0" prefHeight="592.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="Projekt">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <Label layoutX="311.0" layoutY="273.0" prefHeight="17.0" prefWidth="179.0" text="Zde bude veškeré info k projektu" />
-                              <Button layoutX="353.0" layoutY="113.0" mnemonicParsing="false" onAction="#openProject" text="Otevřít projekt" />
+                              <Button layoutX="353.0" layoutY="269.0" mnemonicParsing="false" onAction="#openProject" text="Otevřít projekt" />
                            </children></AnchorPane>
                   </content>
                 </Tab>
@@ -56,13 +55,17 @@
                                                 <Button layoutX="14.0" layoutY="496.0" mnemonicParsing="false" onAction="#newDialog" prefHeight="25.0" prefWidth="74.0" text="Nový" />
                                                 <Button layoutX="145.0" layoutY="496.0" mnemonicParsing="false" onAction="#editDialog" prefHeight="25.0" prefWidth="74.0" text="Upravit" />
                                                 <Button layoutX="282.0" layoutY="496.0" mnemonicParsing="false" onAction="#deleteDialog" prefHeight="25.0" prefWidth="74.0" text="Smazat" />
-                                                <ScrollPane fx:id="spAttributes" layoutX="365.0" layoutY="313.0" prefHeight="175.0" prefWidth="421.0" />
-                                                <Button layoutX="530.0" layoutY="271.0" mnemonicParsing="false" text="Přidat execute" />
-                                                <ComboBox layoutX="365.0" layoutY="271.0" prefWidth="150.0" />
-                                                <Label layoutX="548.0" layoutY="32.0" text="ID dialogu" />
-                                                <ListView layoutX="365.0" layoutY="49.0" prefHeight="200.0" prefWidth="422.0" />
-                                                <Button layoutX="649.0" layoutY="271.0" mnemonicParsing="false" text="Upravit" />
-                                                <Button layoutX="733.0" layoutY="271.0" mnemonicParsing="false" text="Smazat" />
+                                                <ScrollPane fx:id="spAttributes" layoutX="365.0" layoutY="313.0" prefHeight="175.0" prefWidth="421.0">
+                                                   <content>
+                                                      <Pane fx:id="pAttr" prefHeight="173.0" prefWidth="408.0" />
+                                                   </content></ScrollPane>
+                                                <Button layoutX="552.0" layoutY="271.0" mnemonicParsing="false" onAction="#addExecute" text="Vytvořit execute" />
+                                                <ComboBox fx:id="cbFunctions" layoutX="365.0" layoutY="271.0" prefWidth="150.0" />
+                                                <Label fx:id="lDialog" layoutX="548.0" layoutY="32.0" text="ID dialogu" />
+                                                <ListView fx:id="lvExecute" layoutX="365.0" layoutY="49.0" prefHeight="200.0" prefWidth="422.0" />
+                                                <Button layoutX="683.0" layoutY="271.0" mnemonicParsing="false" onAction="#deleteExecute" prefHeight="25.0" prefWidth="99.0" text="Smazat" />
+                                                <Button layoutX="687.0" layoutY="496.0" mnemonicParsing="false" onAction="#saveExecute" text="Uložit execute" />
+                                                <Button layoutX="463.0" layoutY="496.0" mnemonicParsing="false" onAction="#saveFile" text="Uložit celý soubor" />
                                              </children></AnchorPane>
                                     </content>
                                   </Tab>
@@ -82,7 +85,7 @@
                                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                                <children>
                                                                   <TextArea fx:id="taQuestion" layoutX="15.0" layoutY="84.0" prefHeight="346.0" prefWidth="770.0" />
-                                                                  <ComboBox disable="true" layoutX="15.0" layoutY="31.0" prefWidth="150.0" promptText="Source" />
+                                                                  <ComboBox fx:id="cbSource" layoutX="15.0" layoutY="31.0" prefWidth="150.0" promptText="Source" />
                                                                   <Button layoutX="242.0" layoutY="439.0" mnemonicParsing="false" onAction="#saveQuestion" prefHeight="53.0" prefWidth="317.0" text="Přejít na odpovědi" />
                                                                </children>
                                                             </AnchorPane>
@@ -105,14 +108,7 @@
                                                                               <Menu mnemonicParsing="false" text="Přejdi na" />
                                                                            </items>
                                                                         </MenuButton>
-                                                                        <MenuButton fx:id="mbCondition" alignment="CENTER" disable="true" layoutX="27.0" layoutY="344.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="91.0" text="žádná">
-                                                                           <items>
-                                                                              <MenuItem id="0" mnemonicParsing="false" text="žádná" />
-                                                                              <Menu mnemonicParsing="false" text="Odpověděl" />
-                                                                           </items>
-                                                                        </MenuButton>
-                                                                        <TextField fx:id="tfConditionR" layoutX="250.0" layoutY="166.0" prefHeight="25.0" prefWidth="100.0" />
-                                                                        <CheckBox fx:id="cbTokenRemember" disable="true" layoutX="31.0" layoutY="376.0" mnemonicParsing="false" text="Zapamatovat si tuto odpověď" />
+                                                                        <TextField fx:id="tfConditionR" layoutX="250.0" layoutY="166.0" prefHeight="25.0" prefWidth="104.0" />
                                                                         <ChoiceBox fx:id="chbCondition" layoutX="155.0" layoutY="166.0" prefHeight="25.0" prefWidth="76.0" />
                                                                         <Label layoutX="20.0" layoutY="104.0" text="Cíl" />
                                                                         <Label layoutX="9.0" layoutY="145.0" text="Podmínka viditelnosti" />

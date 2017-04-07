@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -16,8 +17,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -35,6 +36,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.sf.ardengine.dialogs.Dialog;
 import net.sf.ardengine.dialogs.Event;
+import net.sf.ardengine.dialogs.Execute;
 import net.sf.ardengine.dialogs.Response;
 import net.sf.ardengine.dialogs.cache.LoadedDocument;
 import net.sf.ardengine.dialogs.functions.FunctionAttributes;
@@ -61,23 +63,25 @@ public class FXMLmainController implements Initializable {
     @FXML
     TextField tfConditionL, tfConditionR;
     @FXML
-    CheckBox cbTokenRemember;
-    @FXML
     ChoiceBox chbCondition;
     @FXML
-    MenuButton mbCondition, mbTarget;
+    ComboBox cbFunctions, cbSource;
+    @FXML
+    MenuButton mbTarget;
     @FXML
     ListView<Dialog> lvDialogs;
     @FXML
     ListView<Response> lvAnswers;
     @FXML
-    TabPane tp2, tp3;
+    ListView<Execute> lvExecute;
     @FXML
-    Label lFile;
+    TabPane tp1, tp2, tp3;
+    @FXML
+    Label lFile, lDialog;
     @FXML
     Tab tabChosenDialog, tabDialogs, tabFile;
     @FXML
-    Pane pAnswer;
+    Pane pAnswer, pAttr;
     LoadedDocument document;
     Document configXML;
     Dialog actualDialog;
@@ -85,19 +89,21 @@ public class FXMLmainController implements Initializable {
     String fileName, target, projectFolder, filePath;
     ObservableList<Dialog> dialogs;
     ObservableList<Response> answers;
+    ObservableList<Condition> functions, conditions;
     SAXBuilder jdomBuilder;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        ObservableList<Condition> list = FXCollections.observableArrayList();
-        list.add(new Condition("Žádná", "", false));
-        list.add(new Condition("==", "EQUALS", false));
-        list.add(new Condition("!=", "EQUALS", true));
-        list.add(new Condition(">", "GREATER_THAN", false));
-        list.add(new Condition("<", "LOWER_THAN", false));
-        list.add(new Condition(">=", "LOWER_THAN", true));
-        list.add(new Condition("<=", "GREATER_THAN", true));
-        chbCondition.setItems(list);
+        conditions = FXCollections.observableArrayList();
+        functions = FXCollections.observableArrayList();
+        conditions.add(new Condition("", "Žádná", false));
+        conditions.add(new Condition("EQUALS", "==", false));
+        conditions.add(new Condition("EQUALS", "!=", true));
+        conditions.add(new Condition("GREATER_THAN", ">", false));
+        conditions.add(new Condition("LOWER_THAN", "<", false));
+        conditions.add(new Condition("LOWER_THAN", ">=", true));
+        conditions.add(new Condition("GREATER_THAN", "<=", true));
+        chbCondition.setItems(conditions);
         chbCondition.getSelectionModel().selectFirst();
         jdomBuilder = new SAXBuilder();
     }
@@ -116,7 +122,6 @@ public class FXMLmainController implements Initializable {
             answers.addAll(actualDialog.getAllResponsesArray());
             lvAnswers.setItems(answers);
             taQuestion.setText(actualDialog.getEvent().getRawText());
-            fillTokens();
         }
     }
 
@@ -176,10 +181,10 @@ public class FXMLmainController implements Initializable {
                         tfConditionR.setText("");
                         break;
                 }
-            }else{
-             chbCondition.getSelectionModel().select(0);
-                        tfConditionL.setText("");
-                        tfConditionR.setText("");
+            } else {
+                chbCondition.getSelectionModel().select(0);
+                tfConditionL.setText("");
+                tfConditionR.setText("");
             }
             target = actualResponse.getTarget();
             mbTarget.setText(target);
@@ -198,6 +203,14 @@ public class FXMLmainController implements Initializable {
         return "0";
     }
 
+    private void dialogWarning(String text) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Warning Dialog");
+        alert.setHeaderText("Varování!");
+        alert.setContentText(text);
+        alert.showAndWait();
+    }
+
     public void openProject() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("JavaFX Projects");
@@ -207,12 +220,38 @@ public class FXMLmainController implements Initializable {
         tabDialogs.setDisable(false);
         tabFile.setDisable(false);
         File configFile = new File(projectFolder + "\\.configuration\\functions.xml");
+        File sourcesFile = new File(projectFolder + "\\.configuration\\sources.xml");
+        Document sourcesXML;
         try {
             configXML = jdomBuilder.build(configFile);
+            sourcesXML = jdomBuilder.build(sourcesFile);
+            ObservableList<String> sources = FXCollections.observableArrayList();
+            sourcesXML.getRootElement().getChildren().forEach((s) -> {
+                sources.add(s.getAttributeValue("name"));
+            });
+            cbSource.setItems(sources);
         } catch (JDOMException | IOException ex) {
             Logger.getLogger(FXMLmainController.class.getName()).log(Level.SEVERE, null, ex);
             //throw some cool exception
         }
+
+        functions.clear();
+        configXML.getRootElement().getChildren().forEach((func) -> {
+            Condition con = new Condition(func.getAttributeValue("name"), func.getChildText("description"), false);
+            func.getChild("compulsory").getChildren().forEach((arg) -> {
+                con.addArgument(new Argument(arg.getAttributeValue("name"), arg.getChildText("description"), false));
+            });
+            func.getChild("optional").getChildren().forEach((arg) -> {
+                con.addArgument(new Argument(arg.getAttributeValue("name"), arg.getChildText("description"), true));
+            });
+            functions.add(con);
+        });
+        /*  for (int i = 3; i < functions.size(); i++) {
+            conditions.add(functions.get(i));
+        }*/
+        cbFunctions.setItems(functions);
+        cbFunctions.getSelectionModel().select(0);
+        tp1.getSelectionModel().select(1);
     }
 
     public void openFile() {
@@ -235,6 +274,7 @@ public class FXMLmainController implements Initializable {
         fileName = file.getAbsolutePath().replace(directory.getAbsolutePath() + "\\", "");
         lFile.setText(fileName);
         fillTargets();
+        tp1.getSelectionModel().select(2);
     }
 
     public void newFile() {
@@ -247,9 +287,13 @@ public class FXMLmainController implements Initializable {
         refreshDialogs();
         refreshAnswers();
         refreshAns();
+        tp1.getSelectionModel().select(2);
     }
 
     public void saveFile() {
+        if (actualDialog!=null) {
+            document.addOrRefreshDialog(actualDialog);
+        }
         document.save(new XMLOutputter(Format.getPrettyFormat()), document.source);
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Info");
@@ -260,7 +304,7 @@ public class FXMLmainController implements Initializable {
 
     public void newDialog() {
         String id = dialogWindow("Zadejte id dialogu:");
-        //TODO unikátnost
+        lDialog.setText(id);
         addDialogToMenu(id);
         actualResponse = null;
         actualDialog = new Dialog(id, new Event("", "Undefined"), new ArrayList<>());
@@ -270,15 +314,18 @@ public class FXMLmainController implements Initializable {
         refreshDialogs();
         refreshAnswers();
         refreshAns();
+        refreshExecutes();
     }
 
     public void editDialog() {
         actualDialog = lvDialogs.getSelectionModel().getSelectedItem();
+        lDialog.setText(actualDialog.getDialogID());
+        cbSource.getSelectionModel().select(actualDialog.getEvent().getSourceID());
         actualResponse = null;
+        refreshExecutes();
         refreshAnswers();
         refreshAns();
         tabChosenDialog.setDisable(false);
-        tp2.getSelectionModel().select(2);
     }
 
     public void deleteDialog() {
@@ -291,7 +338,7 @@ public class FXMLmainController implements Initializable {
     }
 
     public void saveQuestion() { //saveEvent
-        //TODO source
+        actualDialog.getEvent().setSourceID((String) cbSource.getSelectionModel().getSelectedItem());
         actualDialog.getEvent().setRawText(taQuestion.getText());
         tp3.getSelectionModel().select(2);
         document.addOrRefreshDialog(actualDialog);
@@ -348,31 +395,6 @@ public class FXMLmainController implements Initializable {
         actualDialog.removeResponse(lvAnswers.getSelectionModel().getSelectedItem());
         refreshAnswers();
         refreshAns();
-    }
-
-    public void fillTokens() { //bude překopáno s příchodem podmínek
-        /*   mbCondition.getItems().get(0).setOnAction((ActionEvent t) -> {
-            mbCondition.setText("žádná");
-            // condition = "";
-            chbCondition.setDisable(true);
-        });
-         */
-
- /*   Menu m = (Menu) mbCondition.getItems().get(1);
-        m.getItems().clear();
-        if (answerstokens == null) {
-            answerstokens = IO.getAnswerTokens(new File("answers"));
-        }
-        answerstokens.stream().forEach((AnswerToken answerToken) -> {
-            MenuItem item = new MenuItem(answerToken.getName());
-            item.setOnAction((ActionEvent t) -> {
-                mbCondition.setText(answerToken.getName());
-                condition = answerToken.getContent();
-                chbCondition.setDisable(false);
-            });
-            m.getItems().add(item);
-        });
-         */
     }
 
     public void fillTargets() {
@@ -440,20 +462,127 @@ public class FXMLmainController implements Initializable {
         });
     }
 
+    public void addExecute() {
+        if (actualDialog != null) {
+            Condition con = (Condition) cbFunctions.getSelectionModel().getSelectedItem();
+            pAttr.getChildren().clear();
+            Counter c = new Counter();
+            con.getList().forEach((arg) -> {
+                Label label = new Label(arg.name + (arg.optional ? "" : "*"));
+                label.setLayoutY(c.i * 25);
+                label.setId("");
+                pAttr.getChildren().add(label);
+                TextField text = new TextField();
+                text.setId(arg.name);
+                text.promptTextProperty().setValue(arg.desc);
+                text.setLayoutX(80);
+                text.setPrefWidth(320);
+                text.setLayoutY(c.i * 25);
+                c.i++;
+                pAttr.getChildren().add(text);
+            });
+        } else {
+            dialogWarning("Není zvolen dialog. Upravte existující nebo vytvořte nový.");
+        }
+    }
+
+    public void saveExecute() {
+        if (actualDialog != null) {
+            Execute exe = new Execute(((Condition) cbFunctions.getSelectionModel().getSelectedItem()).functionName);
+            pAttr.getChildren().forEach((node) -> {
+                if (!node.idProperty().getValue().isEmpty()) {
+                    TextField text = (TextField) node;
+                    if (!text.getText().isEmpty()) {
+                        exe.getFunctionAttributes().setAttribute(text.getId(), text.getText());
+                    }
+                }
+            });
+            actualDialog.getEvent().addExecute(exe);
+            document.addOrRefreshDialog(actualDialog);
+            refreshExecutes();
+        } else {
+            dialogWarning("Není zvolen dialog. Upravte existující nebo vytvořte nový.");
+        }
+    }
+
+    public void deleteExecute() {
+        if (lvExecute.getSelectionModel().getSelectedItem() != null) {
+            actualDialog.getEvent().removeExecute(lvExecute.getSelectionModel().getSelectedItem());
+            lvExecute.getItems().remove(lvExecute.getSelectionModel().getSelectedItem());
+        } else {
+            dialogWarning("Není vybrán žádný execute.");
+        }
+
+    }
+
+    private void refreshExecutes() {
+        pAttr.getChildren().clear();
+        ObservableList<Execute> executes = FXCollections.observableArrayList();
+        actualDialog.getEvent().getAllExecutes().forEach((t) -> {
+            executes.add(t);
+        });
+        lvExecute.setItems(executes);
+    }
+
+    private class Counter {
+
+        int i;
+
+        Counter() {
+            i = 0;
+        }
+    }
+
     private class Condition {
 
-        String label, functionName;
+        String desc, functionName;
+        List<Argument> list;
         boolean negate;
 
-        Condition(String label, String name, boolean negate) {
+        Condition(String name, String desc, boolean negate) {
             this.functionName = name;
-            this.label = label;
+            this.desc = desc;
             this.negate = negate;
+            list = new ArrayList<>();
+        }
+
+        public void addArgument(Argument a) {
+            list.add(a);
+        }
+
+        public List<Argument> getList() {
+            return list;
+        }
+
+        public boolean isBasicCondition() {
+            return list.isEmpty();
         }
 
         @Override
         public String toString() {
-            return label;
+            if (isBasicCondition()) {
+                return desc;
+            }else{
+                return functionName;
+            }
+        }
+
+    }
+
+    private class Argument {
+
+        String name, desc;
+        boolean optional;
+
+        Argument(String name, String desc, boolean optional) {
+            this.name = name;
+            this.desc = desc;
+            this.optional = optional;
+        }
+
+        @Override
+        public String toString() {
+            return desc;
         }
 
     }

@@ -17,7 +17,7 @@ public class Execute {
     /**Name of tag symbolizing Execute*/
     public static final String TAG_EXECUTE="execute";
     /**Attribute containing name of function*/
-    private static final String ATTR_FUNCTION_NAME="function";
+    public static final String ATTR_FUNCTION_NAME="function";
 
     /**Contains info about possibly called function*/
     private final FunctionAttributes functionArgs;
@@ -54,5 +54,12 @@ public class Execute {
     public FunctionAttributes getFunctionAttributes() {
         return functionArgs;
     }
+
+    @Override
+    public String toString() {
+        return functionArgs.getFunctionName() + "("+functionArgs.getAllAttributesWithoutName()+")";
+    }
+    
+    
 
 }

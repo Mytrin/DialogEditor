@@ -122,4 +122,20 @@ public class Event {
     public Stream<Execute> getAllExecutes(){
         return executes.stream();
     }
+    
+    /**
+     * 
+     * @param execute Execute that will be added to this Event
+     */
+    public void addExecute(Execute execute){
+        executes.add(execute);
+    }
+    
+    /**
+     * 
+     * @param execute that will be removed from this Event
+     */
+    public void removeExecute(Execute execute){
+        executes.remove(execute);
+    }
 }

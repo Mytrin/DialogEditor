@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+<!-- LIST OF SOURCES -->
+	<source name="Undefined" />
+	<source name="Player" />
+	<source name="Follower - Anna" />
+	<source name="Enemy - Skeleton" />
+</root>
