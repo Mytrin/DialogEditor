@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -216,6 +217,7 @@ public class FXMLmainController implements Initializable {
         chooser.setTitle("JavaFX Projects");
         File defaultDirectory = new File(System.getProperty("user.home"));
         chooser.setInitialDirectory(defaultDirectory);
+        
         projectFolder = (chooser.showDialog((Stage) (ap.getScene().getWindow()))).getAbsolutePath();
         tabDialogs.setDisable(false);
         tabFile.setDisable(false);
@@ -467,24 +469,30 @@ public class FXMLmainController implements Initializable {
         if (actualDialog != null) {
             Condition con = (Condition) cbFunctions.getSelectionModel().getSelectedItem();
             pAttr.getChildren().clear();
-            Counter c = new Counter();
-            con.getList().forEach((arg) -> {
-                Label label = new Label(arg.name + (arg.optional ? "" : "*"));
-                label.setLayoutY(c.i * 25);
-                label.setId("");
-                pAttr.getChildren().add(label);
-                TextField text = new TextField();
-                text.setId(arg.name);
-                text.promptTextProperty().setValue(arg.desc);
-                text.setLayoutX(80);
-                text.setPrefWidth(320);
-                text.setLayoutY(c.i * 25);
-                c.i++;
-                pAttr.getChildren().add(text);
-            });
+
+            List<Argument> arguments = con.getArgumentList();
+            for(int i=0; i < arguments.size(); i++){
+                createArgumentComponents(arguments.get(i), i);
+            }
         } else {
             dialogWarning("Není zvolen dialog. Upravte existující nebo vytvořte nový.");
         }
+    }
+    
+    private void createArgumentComponents(Argument arg, int offset){
+        Label label = new Label(arg.name + (arg.optional ? "" : "*"));
+        label.setLayoutY(offset * 25);
+        label.setId("");
+        pAttr.getChildren().add(label);
+        
+        TextField text = new TextField();
+        text.setId(arg.name);
+        text.promptTextProperty().setValue(arg.desc);
+        text.setLayoutX(80);
+        text.setPrefWidth(320);
+        text.setLayoutY(offset * 25);
+        offset++;
+        pAttr.getChildren().add(text);
     }
 
     public void saveExecute() {
@@ -525,15 +533,6 @@ public class FXMLmainController implements Initializable {
         lvExecute.setItems(executes);
     }
 
-    private class Counter {
-
-        int i;
-
-        Counter() {
-            i = 0;
-        }
-    }
-
     private class Condition {
 
         String desc, functionName;
@@ -551,7 +550,7 @@ public class FXMLmainController implements Initializable {
             list.add(a);
         }
 
-        public List<Argument> getList() {
+        public List<Argument> getArgumentList() {
             return list;
         }
 
