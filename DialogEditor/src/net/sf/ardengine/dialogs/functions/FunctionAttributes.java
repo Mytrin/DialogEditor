@@ -2,11 +2,12 @@ package net.sf.ardengine.dialogs.functions;
 
 import java.util.HashMap;
 import net.sf.ardengine.dialogs.Execute;
+import net.sf.ardengine.dialogs.Response;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
 /**
- * Contains basic information about function called owner
+ * Contains arguments of execute or condition 
  */
 public class FunctionAttributes {
 
@@ -91,12 +92,18 @@ public class FunctionAttributes {
      */
     public String getAllAttributesWithoutName() {
         String toReturn = "";
-        for (String key : attributesMap.keySet()) {
-            if (!key.equals(Execute.ATTR_FUNCTION_NAME)) {
-                toReturn += key + ":" + attributesMap.get(key) + ",";
+        
+        if(!attributesMap.isEmpty()){
+            for (String key : attributesMap.keySet()) {
+                if (!key.equals(Execute.ATTR_FUNCTION_NAME) && !key.equals(Response.ATTR_CONDITION)) {
+                    toReturn += key + ":" + attributesMap.get(key) + ", ";
+                }
             }
+            
+            toReturn = toReturn.substring(0, toReturn.length() - 2);
         }
-        return toReturn.substring(0, toReturn.length() - 1);
+        
+        return toReturn;
     }
 
 }

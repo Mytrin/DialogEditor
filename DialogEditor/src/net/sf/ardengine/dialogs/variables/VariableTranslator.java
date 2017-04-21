@@ -35,7 +35,9 @@ public class VariableTranslator {
         while(matcher.find()){
             String varPath = matcher.group(2);
             JsonPrimitive varValue = loader.getVariable(varPath);
-            translatedText = translatedText.replaceAll(VAR_START_REGEX+varPath, varValue.getAsString());
+            String varValueStr = (varValue!=null)?varValue.getAsString():"null";
+            
+            translatedText = translatedText.replaceAll(VAR_START_REGEX+varPath, varValueStr);
             //better X times rescanning the same than browsing json again
             matcher.reset(translatedText);
         }

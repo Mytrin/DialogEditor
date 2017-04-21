@@ -50,11 +50,11 @@ public class FunctionsTranslator {
     
     private Object executeFunction(FunctionAttributes functionAttributes){
         String functionName = functionAttributes.getFunctionName();
-        
+
         if(functionName != null){
             IFunction function = functions.getFunction(functionName);
                 function.execute(loader, translator, functionAttributes);
-                
+
                 return function.getAnswer();
         }else{
             return null;
