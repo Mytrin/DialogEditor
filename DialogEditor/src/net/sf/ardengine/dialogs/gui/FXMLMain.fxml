@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+
+<AnchorPane id="AnchorPane" fx:id="windowPane" prefHeight="768.0" prefWidth="1366.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121" fx:controller="net.sf.ardengine.dialogs.gui.FXMLMainController">
+   <children>
+      <MenuBar fx:id="menuBar" prefHeight="29.0" prefWidth="1366.0">
+        <menus>
+            <Menu fx:id="programMenu" mnemonicParsing="false" text="Program">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
+              </items>
+            </Menu>
+          <Menu fx:id="projectMenu" mnemonicParsing="false" text="Project" />
+          <Menu fx:id="configMenu" mnemonicParsing="false" text="Configuration" />
+          <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showWiki" text="Wiki" />
+              <MenuItem mnemonicParsing="false" onAction="#displayAbout" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <SplitPane fx:id="mainPane" dividerPositions="0.17155425219941348" layoutY="29.0" prefHeight="740.0" prefWidth="1366.0">
+        <items>
+          <AnchorPane fx:id="projectPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TabPane fx:id="workTabsPane" prefHeight="740.0" prefWidth="230.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Project">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                      <Tab text="Components">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <ScrollPane fx:id="canvasPane" prefHeight="708.0" prefWidth="1126.0" vbarPolicy="ALWAYS">
+                     <content>
+                        <Group fx:id="canvasGroup" />
+                     </content>
+                  </ScrollPane>
+                  <HBox fx:id="statusBox" alignment="CENTER_RIGHT" layoutY="703.0" prefHeight="35.0" prefWidth="1126.0" spacing="10.0">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

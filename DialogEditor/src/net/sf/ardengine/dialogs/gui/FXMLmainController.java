@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -53,6 +52,7 @@ import org.jdom2.output.XMLOutputter;
  *
  * @author Kuba
  */
+@Deprecated
 public class FXMLmainController implements Initializable {
 
     @FXML
