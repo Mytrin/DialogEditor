@@ -1,10 +1,10 @@
-package net.sf.ardengine.dialogs.functions;
+package com.squirrels.snow.dialogs.functions;
 
 import com.google.gson.JsonPrimitive;
-import net.sf.ardengine.dialogs.Dialog;
-import net.sf.ardengine.dialogs.Dialogs;
-import net.sf.ardengine.dialogs.Response;
-import net.sf.ardengine.dialogs.TestUtils;
+import com.squirrels.snow.dialogs.Dialog;
+import com.squirrels.snow.dialogs.Dialogs;
+import com.squirrels.snow.dialogs.Response;
+import com.squirrels.snow.dialogs.TestUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

@@ -1,4 +1,4 @@
-package net.sf.ardengine.dialogs;
+package com.squirrels.snow.dialogs;
 
 /**
  * Collection of useful methods for dialog testing

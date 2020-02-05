@@ -1,4 +1,4 @@
-package net.sf.ardengine.dialogs;
+package com.squirrels.snow.dialogs;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
