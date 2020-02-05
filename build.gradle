@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
+
+group 'com.squirells.snow.dialogs'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+javafx {
+    version = "13"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.jdom', name: 'jdom', version: '2.0.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
